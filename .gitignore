@@ -1,0 +1,5 @@
+# Ignore compiled code
+*.o
+*.lo
+# Ignore emacs save files
+*~
