@@ -1,6 +1,6 @@
-      SUBROUTINE dINITL (Kjob)
+      SUBROUTINE dINITL(Kjob)
       IMPLICIT None
-!
+
 ! 1.    INITL
 !
 ! 1.1   INITL PROGRAM SPECIFICATION
@@ -28,6 +28,7 @@
 ! 1.2.2 COMMON BLOCKS USED -
 !
       INCLUDE 'cphys11.i'
+      INCLUDE 'cmxut11.i'
 !            VARIABLES 'TO':
 !              2. EFLAT   - THE FLATTENNING OF THE ELLIPSOID WHICH APPROXIMATES
 !                           THE SHAPE OF THE EARTH. (UNITLESS)  (Site module)
@@ -50,7 +51,7 @@
 !                           4=Jupiter, 5=Saturn, 6=Uranus, and 7=Neptune)
 !             13. AU_meters-The Astronomical unit. (meters)
 !
-      INCLUDE 'ccon.i'
+!!      INCLUDE 'ccon.i'
 !       Variables 'from':
 !              1. ILUOUT  - Output control flag.
 !
@@ -67,14 +68,17 @@
 !                                   but will get input from a '.calc' 
 !                                   correlator file.
 !
-      INCLUDE 'd_input.i'
+!!      INCLUDE 'd_input.i'
 !       Variables 'from':
 !              1. NumSpace - Number of spacecrafts. If .ge. 1, we switch to 
 !                            the near field mode and call subroutine SpaceI
 !                            for spline initialization of the spacecraft 
 !                            positions and veloxcities. 
 !
+
 !
+
+
 !       PROGRAM SPECIFICATIONS -
       Integer*4  KOUNT, Kjob
 !
@@ -87,7 +91,11 @@
 !
 ! Physical constants from IERS Conventions (2003)
 !  Revised 2012-NOV-08 FROM IAU 2009 Resolution B2.
-          VLIGHT  = 299792458.0D0
+
+      write(6,'("*5*UT1IF(4) ",4F15.6)') UT1IF
+
+
+      VLIGHT  = 299792458.0D0
           GMSUN   = 1.32712442099D20
           SECPAU  = 499.0047838061D0
           REARTH  = 6378136.6D0
@@ -121,6 +129,7 @@
 !  Compute square and cube of velocity of light. 93MAY06, D. Gordon
       VLIGHT2 = VLIGHT * VLIGHT
       VLIGHT3 = VLIGHT2 * VLIGHT
+      
 !
 !  Provide for the input and initializations of the model modules and of the
 !  necessary utility routines and for the adding to the header of the
@@ -173,6 +182,7 @@
       Real*8           PI, TWOPI, HALFPI, CONVD, CONVDS, CONVHS, SECDAY
       COMMON / CMATH / PI, TWOPI, HALFPI, CONVD, CONVDS, CONVHS, SECDAY
 !
+
       INCLUDE 'cmxst11.i'
 !            Variables to:
 !       1. CFRAD(Max_Stat)      -  THE SITE SPHERICAL EARTH RADII.  (M)
@@ -307,7 +317,9 @@
 !
 ! 3.3   dSITI PROGRAM STRUCTURE
 !
-       Krr = 0
+      write(6,'("*4*UT1IF(4) ",4F15.6)') UT1IF
+
+      Krr = 0
 !
 !  Fill LNSITE array from SITES array
       Do J = 1, Numsit
@@ -877,6 +889,9 @@
 !
 !----------------------------------------------------------------------------
 !
+      Write(6,'("*3*UT1IF(4) ",4F15.6)') UT1IF
+      write(*,'(A,F6.3)') 'UT1IF(4) = ', UT1IF(4)
+
       If(DABS(UT1IF(4)-1.D0) .gt. .00001D0) Then
         Write(6,'( &
      &  "In UT1I: The scaling law for UT1 table must be 1.0! ",/, &

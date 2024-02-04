@@ -1,7 +1,7 @@
-      SUBROUTINE d_out1(lu_out,fd_out,Kjob)
+      SUBROUTINE d_out1(Kjob)
       IMPLICIT None
 !
-      Integer*4 I, J, K, I1, I6, UTCsec, ierr, lu_out, npoly, intrval,  &
+      Integer*4 I, J, K, I1, I6, UTCsec, ierr, npoly, intrval,  &
      &          MJD, Isec, Numpoly, get4unit, N, M, II, L, ISRC, Kjob
 !     Integer*4 Numtel,          Polynum, K1
       Integer*4 fitPoly, c_out1, c_out2, c_out3, ierr1, ierr2, ierr3
@@ -14,7 +14,6 @@
       Integer*4 difxiowritestring1
       Integer*4 difxiowritestring2
       Integer*4 difxiowritepoly26
-!     SAVE      lu_out, fd_out
 !
       INCLUDE 'cmxst11.i'
 !            Variables 'from':
@@ -30,27 +29,20 @@
 !
       calcVersion = 11
 
-       If (Kjob .eq. 1) lu_out = get4unit()
-       Open(lu_out,File= IM_file_name,status='new',iostat=ierr)
-        If (ierr .ne. 0) write (6,'(" IM file already exists.")')
-!
-      fd_out = fnum(lu_out)
-!        write (6,*) 'd_out1: Kjob,lu_out,fd_out ', Kjob,lu_out,fd_out
         npoly = 5
         intrval = npoly * d_interval
 !
-       flush(lu_out)
-       ierr = difxiowritestring0(fd_out, "CALC SERVER:", "NONE")
-       ierr = difxiowritestring0(fd_out, "CALC PROGRAM:", "DIFXCALC")
-       ierr = difxiowriteint0(fd_out, "CALC VERSION:", calcVersion)
-       ierr = difxiowriteint0(fd_out, "START YEAR:", StartYr)
-       ierr = difxiowriteint0(fd_out, "START MONTH:", StartMo)
-       ierr = difxiowriteint0(fd_out, "START DAY:", StartDay)
-       ierr = difxiowriteint0(fd_out, "START HOUR:", StartHr)
-       ierr = difxiowriteint0(fd_out, "START MINUTE:", StartMin)
-       ierr = difxiowriteint0(fd_out, "START SECOND:", StartSec)
-       ierr = difxiowriteint0(fd_out, "POLYNOMIAL ORDER:", npoly)
-       ierr = difxiowriteint0(fd_out, "INTERVAL (SECS):", intrval)
+       write(*,*) "CALC SERVER:", "NONE"
+       write(*,*)  "CALC PROGRAM:", "DIFXCALC"
+       write(*,*) "CALC VERSION:", calcVersion
+       write(*,*) "START YEAR:", StartYr
+       write(*,*) "START MONTH:", StartMo
+       write(*,*) "START DAY:", StartDay
+       write(*,*) "START HOUR:", StartHr
+       write(*,*) "START MINUTE:", StartMin
+       write(*,*) "START SECOND:", StartSec
+       write(*,*) "POLYNOMIAL ORDER:", npoly
+       write(*,*) "INTERVAL (SECS):", intrval
 !
       if (UVW .eq. 'uncorr')                                            &
      & ierr = difxiowritestring0(fd_out, "ABERRATION CORR:",            &

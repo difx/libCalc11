@@ -38,6 +38,7 @@ AC_CONFIG_FILES([
         Makefile \
         data/Makefile \
         src/Makefile \
+	tests/Makefile \
         src/param11.i \
 ])
 

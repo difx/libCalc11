@@ -48,13 +48,13 @@ libcalc11_la_SOURCES = \
 	dkill.f \
 	d_out.f \
 	dsitu.f \
-	dstrt.f \
 	dscan.f \
 	fitpoly_.c \
 	poly.h \
 	hardisp.f \
 	nfmodel.f \
-	nfstrm.f
+	nfstrm.f \
+	dstart11.f
 
 # Install headers
 include_HEADERS = parsevis.h \

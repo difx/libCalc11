@@ -1,4 +1,4 @@
-      SUBROUTINE dSTART (Num_Scans, Kjob)
+      SUBROUTINE dSTART11 (Num_Scans, Kjob)
       IMPLICIT None
 !
 !           Input variables:
@@ -131,16 +131,21 @@
 !
 !   dSTART Program Structure
 !
+
+      write(*,*) "Start dStart Here"
+
+
       ILUOUT = iout
       MXUTPM = 20
 !
 !   Initialize all flow control and debug output flags to zero.
-      DO 400 N = 1, NFLAG
- 400    IFLAG(N) = 0
+      DO N = 1, NFLAG
+         IFLAG(N) = 0
+      end do
 !
 !
 !   Get the apriori's from the .calc file.
-      Call dGet_input(Kjob)
+      Call dGet_input()
        Num_Scans = NumScans
 !
 ! Set Geocenter station;
@@ -151,85 +156,10 @@
       SITXYZ(1,1) = 0.D0
       SITXYZ(2,1) = 0.D0
       SITXYZ(3,1) = 0.D0
-       NUMSIT = NUMSIT + 1
-!
-!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-!!     Get the start and stop times, all on the even minute
-!       Intrvl(1,1) = StartYr
-!       Intrvl(2,1) = StartMo
-!       Intrvl(3,1) = StartDay
-!       Intrvl(4,1) = StartHr
-!       Min2 = StartMin/2
-!       MinStrt = Min2*2
-!       Intrvl(5,1) = MinStrt 
-!       JD1    = JDY2K (StartYr,StartMo,StartDay)
-!       Xintv(1) = JD1 + Intrvl(4,1)/24.D0 + Intrvl(5,1)/1440.D0
-!!
-!! Add 1 second to stop time to get an additional polynomial interval
-!!  if stop time is on the even minute.
-!       XMin = StartMin + (StartSec+ScanDur+1)/60.D0 + 120.001D0/60.D0
-!       Min2 = Xmin/2
-!       MinStop = Min2*2
-!       StopSec = 0
-!       StopMin = MinStop
-!        Num2Min = (MinStop - MinStrt)/2
-!       StopHr = StartHr
-!!        If (StopMin .ge. 60) Then
-!         StopHr = StopHr + StopMin/60
-!         StopMin = MOD(StopMin,60)
-!        Endif
-!       StopDay = StartDay
-!        If (StopHr .ge. 24) Then
-!         StopDay = StopDay + StopDay/24
-!         StopHr = MOD(StopHr,24)
-!        Endif
-!       StopMo = StartMo
-!        If (MOD(StartYr,4) .eq. 0) IMNTHS(2) = IMNTHS(2) + 1
-!        If (Stopday .gt. IMNTHS(StartMo)) Then
-!         StopMo = StopMo + 1
-!         StopDay = StopDay - IMNTHS(StartMo)
-!        Endif
-!! The scan should not be allowed to cross the year boundary, but 
-!!   just in case:
-!       StopYr = StartYr
-!        If (StopMo .ge. 13) Then
-!         StopYr = StopYr + 1
-!         StopMo = StopMo - 12
-!        Endif
-!!
-!       Intrvl(1,2) = StopYr
-!       Intrvl(2,2) = StopMo
-!       Intrvl(3,2) = StopDay
-!       Intrvl(4,2) = StopHr
-!       Intrvl(5,2) = StopMin
-!       JD2    = JDY2K (StopYr,StopMo,StopDay)
-!       Xintv(2) = JD2 + Intrvl(4,2)/24.D0 + Intrvl(5,2)/1440.D0
-!!
-!! Start/Stop time in UTC minutes (1 day = 1440 minutes)
-!        StrtUTCmin = (Xintv(1) - JD1) * 1440.D0
-!        StopUTCmin = (Xintv(2) - JD1) * 1440.D0
-!        ProcMin = StopUTCmin - StrtUTCmin
-!!       NumEpochs = ((ProcMin/2.D0 + .001) * 5) + 1
-!        NumEpochs = ((ProcMin*60. + .001)/d_interval) + 1
-!! Check that the arrays are sized large enough
-!        If (NumEpochs .gt. Max_Epoch) Then
-!          Write(6,'(/," Requesting ",I4," epochs. Max_epoch is ",I4,    &
-!     &    " in c2poly.i.",/)') NumEpochs, Max_Epoch
-!          Stop
-!        Endif
-!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-!
-!     Write(6,1078) Intrvl, StrtUTCmin, StopUTCmin, ProcMin, NumEpochs
-!1078 Format('dSTART: Start UTC: ',5I6,/,'         Stop UTC: ',5I6,/,   &
-!    &  ' StrtUTCmin, StopUTCmin, ProcMin, NumEpochs: ', 3F8.2,I5)
-!       Write(6,*) 'd_interval ', d_interval
-!
-!      Call YMDJL(FJD2, StopYr, StopMo, StopDay)
-!
-!  See if we are doing a near-field object
-!      Finite_model = .False.
-!     If (NumSpace .ge. 1) Finite_model = .True.
-!
+      NUMSIT = NUMSIT + 1
+
+      Write(6,'("*2*UT1IF(4) ",4F15.6)') UT1IF
+
 !     Normal conclusion.
       RETURN
 !
@@ -495,7 +425,7 @@
        UT1IF(2) = Uintv
        UT1IF(3) = Nerp
        UT1IF(4) = 1.0D0
-!**   Write(6,'(" UT1IF(4) ",4F15.6)') UT1IF
+       Write(6,'("***UT1IF(4) ",4F15.6)') UT1IF
 !
        WOBIF(1) = Xmjds
        WOBIF(2) = Uintv
@@ -672,7 +602,7 @@
       END
 !
 !**********************************************************************
-      SUBROUTINE dGet_input(Kjob)
+      SUBROUTINE dGet_input()
       IMPLICIT None
 !
 !
@@ -817,14 +747,13 @@
 !                                    Declination for each star. (Radians)
 !
 !
-      Character*200 Buf1
 !     CHARACTER*128 calc_file_name
       CHARACTER*26 Sou26, Sp26
       CHARACTER*12 Site12, Scan12
       Real*8    JStart, JStop, StartMJD, EopTag(20), TAIUTC(20),        &
      &          UT1UTC(20), ADJUSTL, X_Sp
       Integer*4 AntNum, SrcNum,          NumEOP, EopNum, SpNum
-      Integer*4 I, J, Unit1, IOS, IX, IK, KJ, I_Sp, L, Kjob
+      Integer*4 I, J, Unit1, IOS, IX, IK, KJ, I_Sp, L
       Integer*4 get4unit
       Character*6 Mount6 
       Save      Unit1
@@ -863,218 +792,105 @@
          Enddo
        Enddo
 !
-       If (Kjob .eq. 1) Unit1 = get4unit()
-       OPEN(Unit1,FILE=calc_file_name ,STATUS='OLD', IOSTAT= IOS)
-       IF(IOS.ne.0) Write(6,'("Open Error for file: ",A128)') calc_file_name
+
 !
  100  Continue
 !
-      Read(Unit1,'(A200)',end=200) Buf1
+      JobID = 1
+      JStart = 60255.68715277778 ! 2023/11/7 16:29:30-16:30:00
+      JStop = 60255.6875
 !
-      If (Buf1(1:7) .eq.'JOB ID:') Read(Buf1(20:40),*) JobID 
-      If (Buf1(1:15).eq.'JOB START TIME:') Read(Buf1(16:40),*) JStart 
-      If (Buf1(1:14).eq.'JOB STOP TIME:') Read(Buf1(16:40),*) JStop 
-      If (Buf1(1:10).eq.'START MJD:') Read(Buf1(20:40),*) StartMJD
-      If (Buf1(1:11).eq.'START YEAR:') Read(Buf1(20:40),*) StartYr
-      If (Buf1(1:12).eq.'START MONTH:') Read(Buf1(20:40),*) StartMo
-      If (Buf1(1:10).eq.'START DAY:') Read(Buf1(20:40),*) StartDay
-      If (Buf1(1:11).eq.'START HOUR:') Read(Buf1(20:40),*) StartHr
-      If (Buf1(1:13).eq.'START MINUTE:') Read(Buf1(20:40),*) StartMin
-      If (Buf1(1:13).eq.'START SECOND:') Read(Buf1(20:40),*) StartSec
-! 
-      If (Buf1(1:15).eq.'NUM TELESCOPES:') Read(Buf1(20:40),*) NUMSIT
-!vvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvv 
-      If (Buf1(1:9).eq.'TELESCOPE') Then
-!  Don't fill site #1. That will be the Geocenter.
+      StartMJD = 60225
+      StartYr = 2023
+      StartMo = 11
+      StartDay = 7
+      StartHr = 16
+      StartMin = 29
+      StartSec = 30
+      NUMSIT = 3
 
-       IX = INDEX(Buf1,'NAME:')
-       If (IX .gt. 0) Then
-        Read(Buf1(10:IX-1),*) AntNum
-        Site12 = Buf1((IX+5):(IX+16)) 
-        Site12 = ADJUSTL(Site12)
-        Sites(AntNum+2) = Site12(1:8)
-       Endif 
-!
-       IX = INDEX(Buf1,'MOUNT:')
-       If (IX .gt. 0) Then
-        Read(Buf1(10:IX-1),*) AntNum
-        Mount6 = Buf1((IX+6):(IX+11)) 
-        Mount6 = ADJUSTL(Mount6)
-        Axis(AntNum+2) = Mount6(1:4)
-       Endif 
-!
-       IX = INDEX(Buf1,'OFFSET (m):')
-       If (IX .gt. 0) Then
-        Read(Buf1(10:IX-1),*) AntNum
-        Read(Buf1((IX+11):(IX+22)),*) SITAXO(AntNum+2) 
-       Endif 
-!
-       IX = INDEX(Buf1,'X (m):')
-       If (IX .gt. 0) Then
-        Read(Buf1(10:IX-1),*) AntNum
-        Read(Buf1((IX+7):(IX+26)),*) SITXYZ(1,AntNum+2) 
-       Endif 
-!
-       IX = INDEX(Buf1,'Y (m):')
-       If (IX .gt. 0) Then
-        Read(Buf1(10:IX-1),*) AntNum
-        Read(Buf1((IX+7):(IX+26)),*) SITXYZ(2,AntNum+2) 
-       Endif 
-!
-       IX = INDEX(Buf1,'Z (m):')
-       If (IX .gt. 0) Then
-        Read(Buf1(10:IX-1),*) AntNum
-        Read(Buf1((IX+7):(IX+26)),*) SITXYZ(3,AntNum+2) 
-       Endif 
-!
-      Endif    
-!^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ 
-!
-      If (Buf1(1:12).eq.'NUM SOURCES:') Read(Buf1(13:30),*)  NUMSTR 
-!vvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvv 
-      If (Buf1(1:6).eq.'SOURCE') Then
-       IX = INDEX(Buf1,'NAME:')
-       If (IX .gt. 0) Then
-        Read(Buf1(8:IX-1),*) SrcNum
-        Sou26 = Buf1((IX+5):(IX+30)) 
-        Sou26 = ADJUSTL(Sou26)
-        SrcName(SrcNum+1) = Sou26(1:20)
-       Endif 
-       IX = INDEX(Buf1,'RA:')
-       If (IX .gt. 0) Then
-        Read(Buf1(7:IX-1),*) SrcNum
-        Read(Buf1((IX+3):(IX+33)),*) RADEC(1,SrcNum+1) 
-       Endif 
-       IX = INDEX(Buf1,'DEC:')
-       If (IX .gt. 0) Then
-        Read(Buf1(7:IX-1),*) SrcNum
-        Read(Buf1((IX+4):(IX+33)),*) RADEC(2,SrcNum+1) 
-       Endif 
-      Endif 
-!^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ 
-!
-      If (Buf1(1:10).eq.'NUM SCANS:') Read(Buf1(11:30),*) NumScans
-!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-!   Scan information now is read in by subroutine dScan.
-!vvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvv 
-!     If (Buf1(1:4).eq.'SCAN') Then
-!      IX = INDEX(Buf1,'IDENTIFIER:')
-!      If (IX .gt. 0) Then
-!       Read(Buf1(5:IX-1),*) ScanNum
-!       Scan12 = Buf1((IX+11):(IX+22)) 
-!       Scan12 = ADJUSTL(Scan12)
-!       ScanID = Scan12(1:10)
-!      Endif 
-!      IX = INDEX(Buf1,'START (S):')
-!      If (IX .gt. 0) Then
-!       Read(Buf1(5:IX-1),*) ScanNum
-!       Read(Buf1((IX+10):(IX+17)),*) ScanStrt
-!      Endif 
-!      IX = INDEX(Buf1,'DUR (S):')
-!      If (IX .gt. 0) Then
-!       Read(Buf1(5:IX-1),*) ScanNum
-!       Read(Buf1((IX+8):(IX+17)),*) ScanDur
-!      Endif 
-!      IX = INDEX(Buf1,'NUM PHS CTRS:')
-!      If (IX .gt. 0) Then
-!       Read(Buf1(5:IX-1),*) ScanNum
-!       Read(Buf1((IX+13):(IX+16)),*) NumPhCntr
-!      Endif 
-!     Endif 
-!^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ 
-!
-      If (Buf1(1:9).eq.'NUM EOPS:') Read(Buf1(10:30),*) NumEOP
-!vvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvv 
-      If (Buf1(1:3).eq.'EOP') Then
-       IX = INDEX(Buf1,'TIME (mjd):')
-       If (IX .gt. 0) Then
-        Read(Buf1(5:IX-1),*) EopNum
-        Read(Buf1((IX+11):(IX+20)),*) EopTag(EopNum+1) 
-       Endif 
-       IX = INDEX(Buf1,'TAI_UTC (sec):')
-       If (IX .gt. 0) Then
-        Read(Buf1(5:IX-1),*) EopNum
-        Read(Buf1((IX+14):(IX+20)),*) TAIUTC(EopNum+1) 
-       Endif 
-       IX = INDEX(Buf1,'UT1_UTC (sec):')
-       If (IX .gt. 0) Then
-        Read(Buf1(5:IX-1),*) EopNum
-        Read(Buf1((IX+14):(IX+25)),*) UT1UTC(EopNum+1) 
-       Endif 
-       IX = INDEX(Buf1,'XPOLE (arcsec):')
-       If (IX .gt. 0) Then
-        Read(Buf1(5:IX-1),*) EopNum
-        Read(Buf1((IX+15):(IX+25)),*) XYWOB(1,EopNum+1) 
-       Endif 
-       IX = INDEX(Buf1,'YPOLE (arcsec):')
-       If (IX .gt. 0) Then
-        Read(Buf1(5:IX-1),*) EopNum
-        Read(Buf1((IX+15):(IX+25)),*) XYWOB(2,EopNum+1) 
-       Endif 
-      Endif 
-!^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ 
-!
-!vvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvv 
-      If (Buf1(1:15).eq.'NUM SPACECRAFT:') Read(Buf1(16:30),*) NumSpace
-       If (Buf1(1:6).eq.'FRAME:') Read(Buf1(21:24),*) SpFrame 
-      If (Buf1(1:10).eq.'SPACECRAFT') Then
-       IX = INDEX(Buf1,'NAME:')
-       If (IX .gt. 0) Then
-        Read(Buf1(11:IX-1),*) SpNum
-!       Read(Buf1((IX+5):(IX+30)),*) SpName(SpNum+1) 
-        Sp26 = Buf1((IX+5):(IX+30)) 
-        Sp26 = ADJUSTL(Sp26)
-        SpName(SpNum+1) = Sp26(1:20)
-!     write(6,*) 'NumSpace,SpNum,SpName(SpNum+1))', NumSpace,SpNum,SpName(SpNum+1)
-       Endif 
-       IX = INDEX(Buf1,'ROWS:')
-       If (IX .gt. 0) Then
-        Read(Buf1(11:IX-1),*) SpNum 
-        Read(Buf1((IX+5):(IX+14)),*) Numrows(SpNum+1) 
-!  Check for too many spacecraft positions.
-           If (Numrows(SpNum+1) .gt. NF_row) Then
-            Write(6,1031) Numrows(SpNum+1), NF_row
- 1031       Format(/,' Number of spacecraft position rows = ',I4,/,     &
-     &            ' The current limit is ',I4,/,' Increase the value ', &
-     &            'of NF_row in d_input.i ',/)
-            Stop 
-           Endif
-          Do I = 1, Numrows(SpNum+1)
-            Read(Unit1,'(A200)',end=200) Buf1
-             If (Buf1(1:6).eq.'FRAME:') Then
-               Read(Buf1(21:24),*) SpFrame
-               Go to 190
-             Endif
-            IX = INDEX(Buf1,':')
-            Read(Buf1(IX+1:200),*) SpTag(I,SpNum+1),SpPos(I,1,SpNum+1), &
-     &       SpPos(I,2,SpNum+1),SpPos(I,3,SpNum+1), SpVel(I,1,SpNum+1), &
-     &       SpVel(I,2,SpNum+1),SpVel(I,3,SpNum+1)
-!             Shift time tags by t_offset if requested.
-            If (SpOffset .eq. 'Offset  ')                               &
-     &             SpTag(I,SpNum+1) = SpTag(I,SpNum+1) + t_offset
- 190         Continue
-          Enddo
-       Endif 
-      Endif 
-!
-!
-       Go to 100
-!
-  200 Continue
-!
-      Close (Unit1)
-!
+!     Don't fill site #1. That will be the Geocenter.  TODO Generalise reference location
+
+
+! Load Antennas
+      
+      Sites(1) = 'AK01'
+      Axis(1) = 'AZEL'
+      SITAXO(1) = 0.00000
+      SITXYZ(1,1) = -2556088.476234
+      SITXYZ(2,1) = 5097405.971301
+      SITXYZ(3,1) = -2848428.398018
+      Sites(2) = 'AK02'
+      Axis(2) = 'AZEL'
+      SITAXO(2) = 0.00000
+      SITXYZ(1,2) = -2556109.97953037
+      SITXYZ(2,2) = 5097388.70113492
+      SITXYZ(3,2) = -2848440.13354315
+      Sites(3) = 'AK03'
+      Axis(3) = 'AZEL'
+      SITAXO(3) = 0.00000
+      SITXYZ(1,3) = -2556121.90976612
+      SITXYZ(2,3) = 5097392.35165232
+      SITXYZ(2,3) = -2848421.53643228
+
+      NUMSTR = 1
+
+      SrcName(1) = 'TEST'
+      RADEC(1,1) = 2.094747513457994
+      RADEC(2,1) = -0.8446227602749486
+
+
+      NumScans = 1
+
+
+      NumEOP = 6
+      
+      EopTag(1) = 60252
+      TAIUTC(1)  = 37
+      UT1UTC(1) = 0.2672
+      XYWOB(1,1)  = 0.2618
+      XYWOB(2,1)  = 0.01248
+      EopTag(2) = 60253
+      TAIUTC(2)  = 37
+      UT1UTC(2) = 0.2654
+      XYWOB(1,2)  = 0.2600
+      XYWOB(2,12)  = 0.01287
+      EopTag(3) = 60254
+      TAIUTC(3)  = 37
+      UT1UTC(3) = 0.2636
+      XYWOB(1,3)  = 0.2583
+      XYWOB(2,3)  = 0.01312
+      EopTag(4) = 60255
+      TAIUTC(4)  = 37
+      UT1UTC(4) = 0.2618
+      XYWOB(1,4)  = 0.2567
+      XYWOB(2,4)  = 0.01318
+      EopTag(5) = 60256
+      TAIUTC(5)  = 37
+      UT1UTC(5) = 0.2599
+      XYWOB(1,5)  = 0.2550
+      XYWOB(2,5)  = 0.01304
+      EopTag(6) = 60257
+      TAIUTC(6)  = 37
+      UT1UTC(6) = 0.2581
+      XYWOB(1,6)  = 0.2534
+      XYWOB(2,6)  = 0.01272
+
+      NumSpace = 0
+
+
 ! Setup WOBIF and UT1IF arrays:
       WOBIF(1) = EOPTag(1) + 2400000.5D0
-!     WOBIF(2) = 1.0D0 
       WOBIF(2) = EOPTag(2) - EOPTag(1)
       WOBIF(3) = NumEop
 !
       UT1IF(1) = EOPTag(1) + 2400000.5D0
-!     UT1IF(2) = 1.0D0
       UT1IF(2) = EOPTag(2) - EOPTag(1)
       UT1IF(3) = NumEop
       UT1IF(4) = 1.0D0 
+
+       Write(6,'("*1*UT1IF(4) ",4F15.6)') UT1IF
+      
 !
        Xintv(1) = JStart + 2400000.5D0
        Xintv(2) = JStop  + 2400000.5D0
@@ -1082,68 +898,14 @@
 !  Save leap seconds
        Xleap_sec = TAIUTC(1)
 !
-!  If multiple scans, get the total duration time.
-!!!!   If(NumScans .gt. 1) ScanDur = ScanStrt + ScanDur
-!
-! Change XY-wobble to milli-arc-seconds
       Do J = 1, NumEOP
        UT1PT(J) = TAIUTC(J) - UT1UTC(J)
        XYWOB(1,J) = XYWOB(1,J) * 1.D3
        XYWOB(2,J) = XYWOB(2,J) * 1.D3
       Enddo
-!
-!  If Spacecraft mode, create SpcIF array
-!     If (NumSpace .ge. 1) Then
-!       SpcIF(1) = SpTag(1,1) + 2400000.5D0 
-!       SpcIF(1) = SpTag(1,1) 
-!         X_Sp = (SpTag(2,1) - SpTag(1,1))*86400.D0 + .01
-!         I_Sp = X_Sp 
-!       SpcIF(2) = I_Sp/86400.D0
-!       SpcIF(3) = Numrows(1)
-!      write(6,*) 'dGet_input: SpcIF,Numrows: ', SpcIF, Numrows(1)
-! Set near field flag to geocentric coordinates. 
-!  [Expand later to handle SSBC coordinates.] 
-!       NF_flag = 'GC'
-!     Endif 
-!
+
       Numsrc = NUMSTR
 !
-!**   IF (Debug .eq. 'd') Then 
-!!    Write(6,*) StartMJD, StartYr, StartMo, StartDay, StartHr,         &
-!!   &           StartMin, StartSec
-!!     Write(6,*) '      '
-!     Write(6,*) ScanDur 
-!      Write(6,*) '      '
-!     Write(6,*) Numsit, (Sites(I), I=2, Numsit+1)
-!      Write(6,*) '      '
-!     Do I = 2, Numsit+1
-!!     Write(6,*) I, Sites(I), Axis(I), SITAXO(I), SitXYZ(1,I),         &
-!!   &            SitXYZ(2,I), SitXYZ(3,I)
-!     Enddo
-!
-!     Write(6,*) 'Number of Sources: ', NUMSTR
-!     Do I=1,NUMSTR
-!      Write(6,*) I, SrcName(I), RADEC(1,I), RADEC(2,I)
-!     Enddo
-!!     Write(6,*) 'WOBIF ', WOBIF
-!!     Write(6,*) 'UT1IF ', UT1IF
-!     Do I = 1, NumEOP
-!!     Write(6,*) I, UT1PT(I), XYWOB(1,I), XYWOB(2,I)
-!     Enddo
-!      Write(6,*) '      '
-!!
-!     If (NumSpace .ge. 1) Then
-!      Write(6,*) 'SpcIF ', SpcIF
-!      Write(6,*) 'X_Sp, I_Sp ', X_Sp, I_Sp
-!      Write(6,*) '      '
-!      Write(6,*) SpNum, SpName(1), Numrows(1)
-!       Do I = 1, Numrows(1)
-!        Write(6,*) SpTag(I,1), SpPos(I,1,1), SpPos(I,2,1),             &
-!    &     SpPos(I,3,1), SpVel(I,1,1), SpVel(I,2,1),SpVel(I,3,1)
-!       Enddo
-!     Endif
-!      Write(6,*) '      '
-!**   Endif 
 !
       Return
       End

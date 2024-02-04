@@ -1,5 +1,6 @@
 SUBDIRS= \
 	src \
+	tests \
 	data
 
 DIST_SUBDIRS= \
