@@ -1,3 +1,7 @@
+AM_FFLAGS = -ffree-form
+
+FCFLAGS = -g
+
 lib_LTLIBRARIES = libcalc11.la
 
 libcalc11_la_SOURCES = \
@@ -59,7 +63,4 @@ libcalc11_la_SOURCES = \
 # Install headers
 include_HEADERS = parsevis.h \
 		poly.h
-
-AM_FFLAGS = \
-	-ffree-form
 

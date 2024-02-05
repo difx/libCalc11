@@ -3,3 +3,7 @@
 *.lo
 # Ignore emacs save files
 *~
+# autoconf stuff
+Makefile.in
+Makefile
+config.*
