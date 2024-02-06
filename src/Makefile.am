@@ -23,6 +23,7 @@ libcalc11_la_SOURCES = \
 	input11.i \
 	param11.i \
 	put2s.i \
+	difxiohelper.c \
 	catiu.f \
 	catmm.f \
 	caxom.f \

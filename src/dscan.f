@@ -50,7 +50,9 @@
 !                  DG, 2016-July-07  Kjob added to conserve LU numbers
 !
 !
-!     Initialize scan inputs.
+!!      write(*,*) "DEBUG: dscan [Iscan, Kjob]", Iscan, Kjob
+!
+!      Initialize scan inputs.
         ScanID       = '          '
         ScanNum      = -1
         ScanStrt     = -1 
@@ -62,121 +64,15 @@
          PhCntr(I)   = -1
         Enddo
         Near_Far = 'Far-field '
-!
-      If (Iscan .gt. 1) Go to 200
-!
-!  First time: open the file and read down to the 'SCAN' section.
-       If (Kjob .eq. 1) Unit1 = get4unit()
-       OPEN(Unit1,FILE=calc_file_name,STATUS='OLD',ACTION='READ',IOSTAT=IOS)
-       IF(IOS.ne.0) Write(6,'("Open Error for file: ",A128)') calc_file_name
-!
- 100  Continue
-      Read(Unit1,'(A200)',end=200) Buf1
-      If (Buf1(1:10).eq.'NUM SCANS:') Go to 200
-      Go to 100
-!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-!
- 200  Continue
-!
-      Read (Unit1,'(A200)',end=300) Buf1
-!
-      If (Buf1(1:4).eq.'SCAN') Then
-       IX = INDEX(Buf1,'IDENTIFIER:')
-       If (IX .gt. 0) Then
-        Read(Buf1(5:IX-1),*) ScanN
-        If(ScanN+1 .eq. Iscan)  Then 
-         ScanNum = ScanN + 1            ! For Fortran
-         Scan12 = Buf1((IX+11):(IX+22)) 
-         Scan12 = ADJUSTL(Scan12)
-         ScanID = Scan12(1:10)
-         Go To 200
-        Else
-         Backspace(Unit1)
-         Go to 300 
-        Endif
-       Endif 
-!
-       IX = INDEX(Buf1,'START (S):')
-       If (IX .gt. 0) Then
-        Read(Buf1(5:IX-1),*) ScanN
-        If(ScanN+1 .eq. Iscan)  Then 
-         ScanNum = ScanN + 1            ! For Fortran
-         Read(Buf1((IX+10):(IX+17)),*) ScanStrt
-         Go To 200
-        Else           
-         Backspace(Unit1)
-         Go to 300
-        Endif
-       Endif 
-!
-       IX = INDEX(Buf1,'DUR (S):')
-       If (IX .gt. 0) Then
-        Read(Buf1(5:IX-1),*) ScanN
-        If(ScanN+1 .eq. Iscan)  Then 
-         ScanNum = ScanN + 1            ! For Fortran
-         Read(Buf1((IX+8):(IX+17)),*) ScanDur
-         Go To 200
-        Else           
-         Backspace(Unit1)
-         Go to 300
-        Endif
-       Endif 
-!
-       IX = INDEX(Buf1,'POINTING SRC:')
-       If (IX .gt. 0) Then
-        Read(Buf1(5:IX-1),*) ScanN
-        If(ScanN+1 .eq. Iscan)  Then 
-         ScanNum = ScanN + 1            ! For Fortran
-         Read(Buf1((IX+13):(IX+16)),*) PointingSrc 
-          PointingSrc = PointingSrc + 1                    ! For Fortran
-         Go To 200
-        Else           
-         Backspace(Unit1)
-         Go to 300
-        Endif
-       Endif 
-!
-       IX = INDEX(Buf1,'NUM PHS CTRS:')
-       If (IX .gt. 0) Then
-        Read(Buf1(5:IX-1),*) ScanN
-        If(ScanN+1 .eq. Iscan)  Then 
-         ScanNum = ScanN + 1            ! For Fortran
-         Read(Buf1((IX+13):(IX+16)),*) NumPhCntr
-         Go To 200
-        Else           
-         Backspace(Unit1)
-         Go to 300
-        Endif
-       Endif 
-!
-!      IX = INDEX(Buf1,'PHS CTR 0:')
-       IX1 = INDEX(Buf1,'PHS CTR')
-       IX2 = INDEX(Buf1,':')
-       If (IX1 .gt. 0 .and. IX2 .gt. 0) Then
-        Read(Buf1(5:IX1-1),*) ScanN
-        If(ScanN+1 .eq. Iscan)  Then 
-         ScanNum = ScanN + 1            ! For Fortran
-         Read(Buf1((IX1+7):(IX2-1)),*) PhCntrNum
-          PhCntrNum = PhCntrNum +1                         ! For Fortran
-         Read(Buf1((IX2+1):(IX2+6)),*) PhCntr(PhCntrNum)
-          PhCntr(PhCntrNum) = PhCntr(PhCntrNum) +1         ! For Fortran
-         Go To 200
-        Else           
-         Backspace(Unit1)
-         Go to 300
-        Endif
-       Endif 
-!
-      Endif 
-!
-      Go to 200
-!
-!
-!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-!
- 300  Continue
-!
-      If (Iscan .eq. NumScans) Close(Unit1)
+
+        ScanNum = 1
+        ScanID = "No001"
+        ScanStrt = 0
+        ScanDur = 240
+        PointingSrc = 1
+        NumPhCntr = 1
+        PhCntrNum = 1
+        PhCntr(PhCntrNum) = 1
 !
 !
 !     Get the start and stop times, all on the even minute
@@ -229,9 +125,11 @@
         StrtUTCmin = (Xintv(1) - JD1) * 1440.D0
         StopUTCmin = (Xintv(2) - JD1) * 1440.D0
         ProcMin = StopUTCmin - StrtUTCmin + .00001
+        write (*,*) "DEBUG: ProcMin= ", ProcMin
 !         # of 2-minute intervals this scan
         Intrvls2min = ProcMin/2 + 1   ! Add an extra 2-minutes
 !         # of calc epochs this scan
+        write (*,*) "DEBUG: Intrvls2min= ", Intrvls2min
         NumEpochs = ((ProcMin*60. + .001)/d_interval) + 1
 !
 !      write(6,*) 'dScan: Numsrc,Numstr,NumSpace: ', Numsrc,Numstr,NumSpace

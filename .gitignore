@@ -7,3 +7,24 @@
 Makefile.in
 Makefile
 config.*
+autom4te.cache
+ltmain.sh
+libtool
+missing
+stamp-h1
+install-sh
+tests/.libs
+src/.libs
+src/.deps
+src/libcalc11.la
+depcomp
+aclocal.m4
+compile
+configure
+tests/testCalc11
+test-driver
+# Install directories
+lib
+bin
+include
+share

@@ -27,43 +27,43 @@ Logical  exist
 !     MAIN Program Structure
 !
 !  Define the calc mode:
-      C_mode = 'difx  '
+C_mode = 'difx  '
 !
-      Kjob = 1
+Kjob = 1
 !
 
-      write(6,'("*6*UT1IF(4) ",4F15.6)') UT1IF
+write(6,'("*6*UT1IF(4) ",4F15.6)') UT1IF
 
       
 !   Initialize dCALC 
-      CALL dSTART11(Num_scans, Kjob)
+CALL dSTART11(Num_scans, Kjob)
 
-      write(6,'("*7*UT1IF(4) ",4F15.6)') UT1IF
+write(6,'("*7*UT1IF(4) ",4F15.6)') UT1IF
 !
 !   Initialize the model modules and the necessary utilities.
-      CALL dINITL(Kjob)
+CALL dINITL(Kjob)
 !
 !  Create and begin writing the IM file:
-      CALL d_out1(Kjob)
+CALL d_out1(Kjob)
 !
 
-   Num_scans = 1
+Num_scans = 1
 !  Get scan information for the I'th scan
-       CALL dSCAN(Num_scans, Kjob)
+CALL dSCAN(Num_scans, Kjob)
+
+write (*,*) "DEBUG: Intrls2min= ", Intrvls2min
 !
 !   Begin the 2-minute interval processing loop
-       DO J = 1, Intrvls2min    ! 2-minute interval loop
+!!DO J = 1, Intrvls2min    ! 2-minute interval loop
+DO J = 1, 2    ! 2-minute interval loop
 !
 !   Create the observations and compute the delays for the I'th scan.
-          CALL dDRIVR(Num_scans,J)
+   CALL dDRIVR(Num_scans,J)
 
-    ENDDO
-!
 !  Output computations to the IM table for this 2-minute interval.
-!!!!!         Call d_out2(I,J,lu_out,fd_out)   ! TODO ADDBACK
-!
-!
-! 100  Continue
-!
+   Call d_out2(1,J)   
+   
+ENDDO
+
 
 end program testCalc11

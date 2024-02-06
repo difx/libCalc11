@@ -6,7 +6,8 @@
       Integer*4 MaxStat
       Parameter (MaxStat = 255)
 !
-      CHARACTER*128 calc_file_name, Jobname, IM_file_name, calc_out_file
+!      CHARACTER*128 calc_file_name, Jobname, IM_file_name, calc_out_file
+      CHARACTER*128 Jobname, IM_file_name, calc_out_file
       CHARACTER*10  Base_mode, L_time, Atmdr, Atmwt, Near_Far
       Real*8        d_interval
       Character*6   UVW 
@@ -17,7 +18,8 @@
 !   Interval between Calc runs (24 seconds for VLBA DiFX correlator).
 !      Parameter ( d_interval = 24.D0)
       COMMON/Contrl/d_interval, Icalc, Ijob, I_out, IM_out, Verbose,    &
-     &              epoch2m, calc_file_name, IM_file_name, Jobname,     &
+!     &              epoch2m, calc_file_name, IM_file_name, Jobname,     &
+     &              epoch2m, IM_file_name, Jobname,                     &
      &              calc_out_file, Base_mode, L_time, Atmdr, Atmwt,     &
      &              Numjobs, Near_Far, overwrite, UVW
 !

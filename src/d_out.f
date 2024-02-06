@@ -7,13 +7,6 @@
       Integer*4 fitPoly, c_out1, c_out2, c_out3, ierr1, ierr2, ierr3
       Integer*4 fd_out
       Integer*4 calcVersion
-      Integer*4 difxiowriteint0
-      Integer*4 difxiowriteint1
-      Integer*4 difxiowriteint2
-      Integer*4 difxiowritestring0
-      Integer*4 difxiowritestring1
-      Integer*4 difxiowritestring2
-      Integer*4 difxiowritepoly26
 !
       INCLUDE 'cmxst11.i'
 !            Variables 'from':
@@ -44,31 +37,22 @@
        write(*,*) "POLYNOMIAL ORDER:", npoly
        write(*,*) "INTERVAL (SECS):", intrval
 !
-      if (UVW .eq. 'uncorr')                                            &
-     & ierr = difxiowritestring0(fd_out, "ABERRATION CORR:",            &
-     &                   "UNCORRECTED")
-      if (UVW .eq. 'approx')                                            &
-     & ierr = difxiowritestring0(fd_out, "ABERRATION CORR:",            &
-     &                   "APPROXIMATE")
-      if (UVW .eq. 'exact ')                                            &
-     & ierr = difxiowritestring0(fd_out, "ABERRATION CORR:",            &
-     &                   "EXACT")
-      if (UVW .eq. 'noatmo')                                            &
-     & ierr = difxiowritestring0(fd_out, "ABERRATION CORR:",            &
-     &                   "NO ATMOS")
-!
-       ierr = difxiowriteint0(fd_out, "NUM TELESCOPES:", Numsite-1)
+      if (UVW .eq. 'uncorr') write(*,*) "ABERRATION CORR: UNCORRECTED"
+      if (UVW .eq. 'approx') write(*,*) "ABERRATION CORR: APPROXIMATE"
+      if (UVW .eq. 'exact ') write(*,*) "ABERRATION CORR: EXACT"
+      if (UVW .eq. 'noatmo') write(*,*) "ABERRATION CORR: NO ATMOS"
+
+       write(*,*) "NUM TELESCOPES:", Numsite-1
        Do I = 1, numsite-1
-        ierr = difxiowritestring1(fd_out, "TELESCOPE %d NAME:",    &
-     &                   I-1, Sites(I+1))
+        write(*,*) "TELESCOPE NAME:", Sites(I)
        Enddo
-       ierr = difxiowriteint0(fd_out, "NUM SCANS:", NumScans)
-!
+       write(*,*) "NUM SCANS:", NumScans
+
       Return
       End
 !
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-      SUBROUTINE d_out2(Iscan,J2m,lu_out,fd_out)
+      SUBROUTINE d_out2(Iscan,J2m)
       IMPLICIT None
 !
       INCLUDE 'cmxsr11.i'
@@ -111,6 +95,8 @@
 !
        INCLUDE 'd_input.i'
 !
+       write(*,*) "DEBUG: d_out2  Iscan, J2m ", Iscan, J2m
+
        Numtel = Numsite - 1
        Do k1 = 1, Numsite
         Site_C(k1)(1:8) = Sites(k1+1)
@@ -122,17 +108,13 @@
         Numpoly = Intrvls2min
 !
 !
-       If (J2m .eq. 1) Then
-        ierr = difxiowritestring1(fd_out, "SCAN %d POINTING SRC:",    &
-     &                Iscan-1, SrcName(PointingSrc) )
-        ierr = difxiowriteint1(fd_out, "SCAN %d NUM PHS CTRS:",       &
-     &                Iscan-1, NumPhCntr)
-        Do Iph = 1,NumPhCntr
-        ierr = difxiowritestring2(fd_out, "SCAN %d PHS CTR %d SRC:",  &
-     &                Iscan-1, Iph-1, SrcName(PhCntr(Iph)) )
-        Enddo
-        ierr = difxiowriteint1(fd_out, "SCAN %d NUM POLY:",           &
-     &                Iscan-1, Numpoly)
+        If (J2m .eq. 1) Then
+           write(*,*) "SCAN ", Iscan, " POINTSRC:", SrcName(PointingSrc)
+           write(*,*)  "SCAN %d NUM PHS CTRS:", Iscan-1, NumPhCntr
+           Do Iph = 1,NumPhCntr
+              write(*,*) "SN PTR:", Iscan-1, Iph-1, SrcName(PhCntr(Iph)) 
+           Enddo
+           write (*,*) "SCAN %d NUM POLY:", Iscan-1, Numpoly
        Endif
 !
 !
@@ -149,9 +131,9 @@
      &           Iymdhms_f(1,4)*3600. 
 !
         flush(lu_out)
-        ierr = difxiowriteint2(fd_out, "SCAN %d POLY %d MJD:", Iscan-1, J2m-1, MJD)
-        ierr = difxiowriteint2(fd_out, "SCAN %d POLY %d SEC:", Iscan-1, J2m-1, Isec)
-!
+        write(*,*) "SCAN %d POLY %d MJD:", Iscan-1, J2m-1, MJD
+        write(*,*) "SCAN %d POLY %d SEC:", Iscan-1, J2m-1, Isec
+!     
       Do ISRC = 1, (NumPhCntr+1)     ! Pointing source/Phase centers loop
         Do J = 1, Numtel                      ! Station loop 
 !
@@ -182,48 +164,48 @@
       Enddo
 !
       ierr = fitPoly(Acoef, Atmdry6, %VAL(n), %VAL(m), %VAL(delta))
-        ierr = difxiowritepoly26(fd_out, "SRC %d ANT %d DRY (us):",     &
-           ISRC-1, J-1, Acoef(1), Acoef(2), Acoef(3), Acoef(4),       &
-           Acoef(5), Acoef(6))
+!!      ierr = difxiowritepoly26(fd_out, "SRC %d ANT %d DRY (us):",     &
+!!           ISRC-1, J-1, Acoef(1), Acoef(2), Acoef(3), Acoef(4),       &
+!!           Acoef(5), Acoef(6))
       Do L = 1, N
        Atmdrycoef(J,L) = Acoef(L)
       Enddo
 !
       ierr = fitPoly(Acoef, Atmwet6, %VAL(n), %VAL(m), %VAL(delta))
-        ierr = difxiowritepoly26(fd_out, "SRC %d ANT %d WET (us):",     &
-           ISRC-1, J-1, Acoef(1), Acoef(2), Acoef(3), Acoef(4),       &
-           Acoef(5), Acoef(6))
+!!        ierr = difxiowritepoly26(fd_out, "SRC %d ANT %d WET (us):",     &
+!!           ISRC-1, J-1, Acoef(1), Acoef(2), Acoef(3), Acoef(4),       &
+!!          Acoef(5), Acoef(6))
       Do L = 1, N
        Atmwetcoef(J,L) = Acoef(L)
       Enddo
 !
       ierr = fitPoly(Acoef, Az6, %VAL(n), %VAL(m), %VAL(delta))
-        ierr = difxiowritepoly26(fd_out, "SRC %d ANT %d AZ:     ",     &
-           ISRC-1, J-1, Acoef(1), Acoef(2), Acoef(3), Acoef(4),       &
-           Acoef(5), Acoef(6))
+!!        ierr = difxiowritepoly26(fd_out, "SRC %d ANT %d AZ:     ",     &
+!!           ISRC-1, J-1, Acoef(1), Acoef(2), Acoef(3), Acoef(4),       &
+!!           Acoef(5), Acoef(6))
 !
       ierr = fitPoly(Acoef, El6, %VAL(n), %VAL(m), %VAL(delta))
-        ierr = difxiowritepoly26(fd_out, "SRC %d ANT %d EL GEOM:",     &
-           ISRC-1, J-1, Acoef(1), Acoef(2), Acoef(3), Acoef(4),       &
-           Acoef(5), Acoef(6))
+!!        ierr = difxiowritepoly26(fd_out, "SRC %d ANT %d EL GEOM:",     &
+!!           ISRC-1, J-1, Acoef(1), Acoef(2), Acoef(3), Acoef(4),       &
+!!           Acoef(5), Acoef(6))
 !
       ierr = fitPoly(Acoef, StaX6, %VAL(n), %VAL(m), %VAL(delta))
       if (DoStnPos .eq. 1)                                              &
-        ierr = difxiowritepoly26(fd_out, "SRC %d ANT %d STA X (m):",    &
-           ISRC-1, J-1, Acoef(1), Acoef(2), Acoef(3), Acoef(4),        &
-           Acoef(5), Acoef(6))
+!!        ierr = difxiowritepoly26(fd_out, "SRC %d ANT %d STA X (m):",    &
+!!           ISRC-1, J-1, Acoef(1), Acoef(2), Acoef(3), Acoef(4),        &
+!!           Acoef(5), Acoef(6))
 !
       ierr = fitPoly(Acoef, StaY6, %VAL(n), %VAL(m), %VAL(delta))
       if (DoStnPos .eq. 1)                                              &
-        ierr = difxiowritepoly26(fd_out, "SRC %d ANT %d STA Y (m):",    &
-           ISRC-1, J-1, Acoef(1), Acoef(2), Acoef(3), Acoef(4),        &
-           Acoef(5), Acoef(6))
+!!        ierr = difxiowritepoly26(fd_out, "SRC %d ANT %d STA Y (m):",    &
+!!           ISRC-1, J-1, Acoef(1), Acoef(2), Acoef(3), Acoef(4),        &
+!!           Acoef(5), Acoef(6))
 !
       ierr = fitPoly(Acoef, StaZ6, %VAL(n), %VAL(m), %VAL(delta))
       if (DoStnPos .eq. 1)                                              &
-        ierr = difxiowritepoly26(fd_out, "SRC %d ANT %d STA Z (m):",    &
-           ISRC-1, J-1, Acoef(1), Acoef(2), Acoef(3), Acoef(4),        &
-           Acoef(5), Acoef(6))
+!!        ierr = difxiowritepoly26(fd_out, "SRC %d ANT %d STA Z (m):",    &
+!!           ISRC-1, J-1, Acoef(1), Acoef(2), Acoef(3), Acoef(4),        &
+!!           Acoef(5), Acoef(6))
 !
       ierr = fitPoly(Acoef, StaXt6, %VAL(n), %VAL(m), %VAL(delta))
       if (DoStnPos .eq. 2)                                              &
