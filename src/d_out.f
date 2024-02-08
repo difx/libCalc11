@@ -97,6 +97,8 @@
 !
        write(*,*) "DEBUG: d_out2  Iscan, J2m ", Iscan, J2m
 
+       fd_out = 1
+       
        Numtel = Numsite - 1
        Do k1 = 1, Numsite
         Site_C(k1)(1:8) = Sites(k1+1)
@@ -164,48 +166,48 @@
       Enddo
 !
       ierr = fitPoly(Acoef, Atmdry6, %VAL(n), %VAL(m), %VAL(delta))
-!!      ierr = difxiowritepoly26(fd_out, "SRC %d ANT %d DRY (us):",     &
-!!           ISRC-1, J-1, Acoef(1), Acoef(2), Acoef(3), Acoef(4),       &
-!!           Acoef(5), Acoef(6))
+      ierr = difxiowritepoly26(fd_out, "SRC %d ANT %d DRY (us):",     &
+             ISRC-1, J-1, Acoef(1), Acoef(2), Acoef(3), Acoef(4),       &
+             Acoef(5), Acoef(6))
       Do L = 1, N
        Atmdrycoef(J,L) = Acoef(L)
       Enddo
 !
       ierr = fitPoly(Acoef, Atmwet6, %VAL(n), %VAL(m), %VAL(delta))
-!!        ierr = difxiowritepoly26(fd_out, "SRC %d ANT %d WET (us):",     &
-!!           ISRC-1, J-1, Acoef(1), Acoef(2), Acoef(3), Acoef(4),       &
-!!          Acoef(5), Acoef(6))
+        ierr = difxiowritepoly26(fd_out, "SRC %d ANT %d WET (us):",     &
+           ISRC-1, J-1, Acoef(1), Acoef(2), Acoef(3), Acoef(4),       &
+          Acoef(5), Acoef(6))
       Do L = 1, N
        Atmwetcoef(J,L) = Acoef(L)
       Enddo
 !
       ierr = fitPoly(Acoef, Az6, %VAL(n), %VAL(m), %VAL(delta))
-!!        ierr = difxiowritepoly26(fd_out, "SRC %d ANT %d AZ:     ",     &
-!!           ISRC-1, J-1, Acoef(1), Acoef(2), Acoef(3), Acoef(4),       &
-!!           Acoef(5), Acoef(6))
+        ierr = difxiowritepoly26(fd_out, "SRC %d ANT %d AZ:     ",     &
+           ISRC-1, J-1, Acoef(1), Acoef(2), Acoef(3), Acoef(4),       &
+           Acoef(5), Acoef(6))
 !
       ierr = fitPoly(Acoef, El6, %VAL(n), %VAL(m), %VAL(delta))
-!!        ierr = difxiowritepoly26(fd_out, "SRC %d ANT %d EL GEOM:",     &
-!!           ISRC-1, J-1, Acoef(1), Acoef(2), Acoef(3), Acoef(4),       &
-!!           Acoef(5), Acoef(6))
+        ierr = difxiowritepoly26(fd_out, "SRC %d ANT %d EL GEOM:",     &
+           ISRC-1, J-1, Acoef(1), Acoef(2), Acoef(3), Acoef(4),       &
+           Acoef(5), Acoef(6))
 !
       ierr = fitPoly(Acoef, StaX6, %VAL(n), %VAL(m), %VAL(delta))
       if (DoStnPos .eq. 1)                                              &
-!!        ierr = difxiowritepoly26(fd_out, "SRC %d ANT %d STA X (m):",    &
-!!           ISRC-1, J-1, Acoef(1), Acoef(2), Acoef(3), Acoef(4),        &
-!!           Acoef(5), Acoef(6))
+        ierr = difxiowritepoly26(fd_out, "SRC %d ANT %d STA X (m):",    &
+           ISRC-1, J-1, Acoef(1), Acoef(2), Acoef(3), Acoef(4),        &
+           Acoef(5), Acoef(6))
 !
       ierr = fitPoly(Acoef, StaY6, %VAL(n), %VAL(m), %VAL(delta))
       if (DoStnPos .eq. 1)                                              &
-!!        ierr = difxiowritepoly26(fd_out, "SRC %d ANT %d STA Y (m):",    &
-!!           ISRC-1, J-1, Acoef(1), Acoef(2), Acoef(3), Acoef(4),        &
-!!           Acoef(5), Acoef(6))
+        ierr = difxiowritepoly26(fd_out, "SRC %d ANT %d STA Y (m):",    &
+           ISRC-1, J-1, Acoef(1), Acoef(2), Acoef(3), Acoef(4),        &
+           Acoef(5), Acoef(6))
 !
       ierr = fitPoly(Acoef, StaZ6, %VAL(n), %VAL(m), %VAL(delta))
       if (DoStnPos .eq. 1)                                              &
-!!        ierr = difxiowritepoly26(fd_out, "SRC %d ANT %d STA Z (m):",    &
-!!           ISRC-1, J-1, Acoef(1), Acoef(2), Acoef(3), Acoef(4),        &
-!!           Acoef(5), Acoef(6))
+        ierr = difxiowritepoly26(fd_out, "SRC %d ANT %d STA Z (m):",    &
+           ISRC-1, J-1, Acoef(1), Acoef(2), Acoef(3), Acoef(4),        &
+           Acoef(5), Acoef(6))
 !
       ierr = fitPoly(Acoef, StaXt6, %VAL(n), %VAL(m), %VAL(delta))
       if (DoStnPos .eq. 2)                                              &
@@ -245,7 +247,7 @@
 !
       ierr = fitPoly(Acoef, Wbase6, %VAL(n), %VAL(m), %VAL(delta))
 !     If (IM_out .eq. 1)                                                &
-        ierr = difxiowritepoly26(fd_out, "SRC %d ANT %d W (m):",        &
+      ierr = difxiowritepoly26(fd_out, "SRC %d ANT %d W (m):",        &
            ISRC-1, J-1, Acoef(1), Acoef(2), Acoef(3), Acoef(4),       &
            Acoef(5), Acoef(6))
       Do L = 1, N
