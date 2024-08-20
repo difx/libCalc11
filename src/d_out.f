@@ -26,7 +26,7 @@
         intrval = npoly * d_interval
 !
        write(*,*) "CALC SERVER:", "NONE"
-       write(*,*)  "CALC PROGRAM:", "DIFXCALC"
+       write(*,*) "CALC PROGRAM:", "DIFXCALC"
        write(*,*) "CALC VERSION:", calcVersion
        write(*,*) "START YEAR:", StartYr
        write(*,*) "START MONTH:", StartMo
@@ -44,7 +44,7 @@
 
        write(*,*) "NUM TELESCOPES:", Numsite-1
        Do I = 1, numsite-1
-        write(*,*) "TELESCOPE NAME:", Sites(I)
+        write(*,*) "TELESCOPE NAME:", Sites(I+1)
        Enddo
        write(*,*) "NUM SCANS:", NumScans
 
@@ -95,8 +95,6 @@
 !
        INCLUDE 'd_input.i'
 !
-       write(*,*) "DEBUG: d_out2  Iscan, J2m ", Iscan, J2m
-
        fd_out = 1
        
        Numtel = Numsite - 1
@@ -133,8 +131,8 @@
      &           Iymdhms_f(1,4)*3600. 
 !
         flush(lu_out)
-        write(*,*) "SCAN %d POLY %d MJD:", Iscan-1, J2m-1, MJD
-        write(*,*) "SCAN %d POLY %d SEC:", Iscan-1, J2m-1, Isec
+        write(*,*) "SCAN", Iscan-1, "POLY", J2m-1," MJD:", MJD
+        write(*,*) "SCAN", Iscan-1, " POLY", J2m-1, " SEC:", Isec
 !     
       Do ISRC = 1, (NumPhCntr+1)     ! Pointing source/Phase centers loop
         Do J = 1, Numtel                      ! Station loop 
@@ -156,7 +154,8 @@
            StaZt6(K)  = StaZt_f(1,K,1,J,ISRC)
           Enddo
 !
-!    Send to C routine fitPoly to compute polynomial coefficients
+!         Send to C routine fitPoly to compute polynomial coefficients
+
       ierr = fitPoly(Acoef, Delay6, %VAL(n), %VAL(m), %VAL(delta))
         ierr = difxiowritepoly26(fd_out, "SRC %d ANT %d DELAY (us):",   &
            ISRC-1, J-1, Acoef(1), Acoef(2), Acoef(3), Acoef(4),       &

@@ -59,6 +59,10 @@ libcalc11_la_SOURCES = \
 	hardisp.f \
 	nfmodel.f \
 	nfstrm.f \
+	load_source.f \
+	load_ant.f \
+	load_eop.f \
+	set_times.f \
 	dstart11.f
 
 # Install headers

@@ -18,27 +18,18 @@ Logical  exist
 !
 ! 1.2.8 PROGRAM VARIABLES -
 !           ILU  - The message LU, set to 6. [Not used anywhere?]
-!
-! 1.2.9 PROGRAMMER - David Gordon 01/15/2013
-!      Jan. 2013  DG - dmain.f created for the difx version of calc11. 
-!      Mar. 2014  DG - Moved C_mode definition to dmain.f and cmain.f.
-!      Jan. 2015  DG - Modified for multiple scans and multiple phase centers.
-!
-!     MAIN Program Structure
-!
 !  Define the calc mode:
 C_mode = 'difx  '
 !
 Kjob = 1
 !
 
-write(6,'("*6*UT1IF(4) ",4F15.6)') UT1IF
+call getcl()
 
       
 !   Initialize dCALC 
 CALL dSTART11(Num_scans, Kjob)
 
-write(6,'("*7*UT1IF(4) ",4F15.6)') UT1IF
 !
 !   Initialize the model modules and the necessary utilities.
 CALL dINITL(Kjob)
@@ -51,11 +42,10 @@ Num_scans = 1
 !  Get scan information for the I'th scan
 CALL dSCAN(Num_scans, Kjob)
 
-write (*,*) "DEBUG: Intrls2min= ", Intrvls2min
 !
 !   Begin the 2-minute interval processing loop
-!!DO J = 1, Intrvls2min    ! 2-minute interval loop
-DO J = 1, 2    ! 2-minute interval loop
+DO J = 1, Intrvls2min    ! 2-minute interval loop
+!DO J = 1, 2    ! 2-minute interval loop
 !
 !   Create the observations and compute the delays for the I'th scan.
    CALL dDRIVR(Num_scans,J)

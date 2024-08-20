@@ -92,9 +92,6 @@
 ! Physical constants from IERS Conventions (2003)
 !  Revised 2012-NOV-08 FROM IAU 2009 Resolution B2.
 
-      write(6,'("*5*UT1IF(4) ",4F15.6)') UT1IF
-
-
       VLIGHT  = 299792458.0D0
           GMSUN   = 1.32712442099D20
           SECPAU  = 499.0047838061D0
@@ -317,8 +314,6 @@
 !
 ! 3.3   dSITI PROGRAM STRUCTURE
 !
-      write(6,'("*4*UT1IF(4) ",4F15.6)') UT1IF
-
       Krr = 0
 !
 !  Fill LNSITE array from SITES array
@@ -408,7 +403,7 @@
       DO 490  N = 1,NUMSIT
 !
 !   Check for geocenter
-         If (Zero_site .eq. N) Go to 491
+        If (Zero_site .eq. N) Go to 491
 !
 !       Compute the site spherical radii.
         CFRAD(N) = DSQRT ( SITXYZ(1,N)**2  +  SITXYZ(2,N)**2  +         &
@@ -889,9 +884,6 @@
 !
 !----------------------------------------------------------------------------
 !
-      Write(6,'("*3*UT1IF(4) ",4F15.6)') UT1IF
-      write(*,'(A,F6.3)') 'UT1IF(4) = ', UT1IF(4)
-
       If(DABS(UT1IF(4)-1.D0) .gt. .00001D0) Then
         Write(6,'( &
      &  "In UT1I: The scaling law for UT1 table must be 1.0! ",/, &

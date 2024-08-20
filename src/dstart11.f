@@ -132,9 +132,6 @@
 !   dSTART Program Structure
 !
 
-      write(*,*) "Start dStart Here"
-
-
       ILUOUT = iout
       MXUTPM = 20
 !
@@ -157,8 +154,6 @@
       SITXYZ(2,1) = 0.D0
       SITXYZ(3,1) = 0.D0
       NUMSIT = NUMSIT + 1
-
-      Write(6,'("*2*UT1IF(4) ",4F15.6)') UT1IF
 
 !     Normal conclusion.
       RETURN
@@ -425,7 +420,6 @@
        UT1IF(2) = Uintv
        UT1IF(3) = Nerp
        UT1IF(4) = 1.0D0
-       Write(6,'("***UT1IF(4) ",4F15.6)') UT1IF
 !
        WOBIF(1) = Xmjds
        WOBIF(2) = Uintv
@@ -750,9 +744,9 @@
 !     CHARACTER*128 calc_file_name
       CHARACTER*26 Sou26, Sp26
       CHARACTER*12 Site12, Scan12
-      Real*8    JStart, JStop, StartMJD, EopTag(20), TAIUTC(20),        &
+      Real*8    StartMJD, EopTag(20), TAIUTC(20),        &
      &          UT1UTC(20), ADJUSTL, X_Sp
-      Integer*4 AntNum, SrcNum,          NumEOP, EopNum, SpNum
+      Integer*4 AntNum, SrcNum,          EopNum, SpNum
       Integer*4 I, J, Unit1, IOS, IX, IK, KJ, I_Sp, L
       Integer*4 get4unit
       Character*6 Mount6 
@@ -777,12 +771,11 @@
 !!    Character*8 SrcName(10)
       Character*20 SrcName(MAX_ARC_SRC)
       Equivalence (LNSTAR(1,1), SrcName(1))
-!
+
 !  Need to initialize stuff:
 !
        NumSit = 0
        NumStr = 0
-       NumEOP = 0
        NumSpace = 0
        SpFrame = 'ECJ2'
        Do IK=1, Max_Stat
@@ -797,121 +790,40 @@
  100  Continue
 !
       JobID = 1
-      JStart = 60255.68715277778 ! 2023/11/7 16:29:30-16:30:00
-      JStop = 60255.6875
-!
-      StartMJD = 60225
-      StartYr = 2023
-      StartMo = 11
-      StartDay = 7
-      StartHr = 16
-      StartMin = 29
-      StartSec = 30
-      NUMSIT = 3
 
-!     Don't fill site #1. That will be the Geocenter.  TODO Generalise reference location
-
+      call set_times(60255.68715277778d0, 60255.6875d0)
 
 ! Load Antennas
+!     Don't fill site #1. That will be the Geocenter.  TODO Generalise reference location
+      NUMSIT = 0
+      call load_ant('AK01', 'AZEL', 0.00000d0, -2556088.476234d0,   5097405.971301d0,   -2848428.398018d0)
+      call load_ant('AK02', 'AZEL', 0.00000d0, -2556109.97953037d0, 5097388.70113492d0, -2848440.13354315d0)
+      call load_ant('AK03', 'AZEL', 0.00000d0, -2556121.90976612d0, 5097392.35165232d0, -2848421.53643228d0)
       
-      Sites(1) = 'AK01'
-      Axis(1) = 'AZEL'
-      SITAXO(1) = 0.00000
-      SITXYZ(1,1) = -2556088.476234
-      SITXYZ(2,1) = 5097405.971301
-      SITXYZ(3,1) = -2848428.398018
-      Sites(2) = 'AK02'
-      Axis(2) = 'AZEL'
-      SITAXO(2) = 0.00000
-      SITXYZ(1,2) = -2556109.97953037
-      SITXYZ(2,2) = 5097388.70113492
-      SITXYZ(3,2) = -2848440.13354315
-      Sites(3) = 'AK03'
-      Axis(3) = 'AZEL'
-      SITAXO(3) = 0.00000
-      SITXYZ(1,3) = -2556121.90976612
-      SITXYZ(2,3) = 5097392.35165232
-      SITXYZ(2,3) = -2848421.53643228
-
       NUMSTR = 1
 
-      SrcName(1) = 'TEST'
-      RADEC(1,1) = 2.094747513457994
-      RADEC(2,1) = -0.8446227602749486
-
-
+      call load_source(1, '1934-638', 5.1d0, -1.0d0)
+      
       NumScans = 1
 
-
-      NumEOP = 6
+!     Number of  EOPs
+      WOBIF(3) = 0 
+      call load_eop(60252, 37, 0.2672, 0.2618,  0.01248)
+      call load_eop(60253, 37, 0.2654, 0.2600,  0.01287)
+      call load_eop(60254, 37, 0.2636, 0.2583,  0.01312)
+      call load_eop(60255, 37, 0.2618, 0.2567,  0.01318)
+      call load_eop(60256, 37, 0.2599, 0.2550,  0.01304)
+      call load_eop(60257, 37, 0.2581, 0.2534,  0.01272)
       
-      EopTag(1) = 60252
-      TAIUTC(1)  = 37
-      UT1UTC(1) = 0.2672
-      XYWOB(1,1)  = 0.2618
-      XYWOB(2,1)  = 0.01248
-      EopTag(2) = 60253
-      TAIUTC(2)  = 37
-      UT1UTC(2) = 0.2654
-      XYWOB(1,2)  = 0.2600
-      XYWOB(2,12)  = 0.01287
-      EopTag(3) = 60254
-      TAIUTC(3)  = 37
-      UT1UTC(3) = 0.2636
-      XYWOB(1,3)  = 0.2583
-      XYWOB(2,3)  = 0.01312
-      EopTag(4) = 60255
-      TAIUTC(4)  = 37
-      UT1UTC(4) = 0.2618
-      XYWOB(1,4)  = 0.2567
-      XYWOB(2,4)  = 0.01318
-      EopTag(5) = 60256
-      TAIUTC(5)  = 37
-      UT1UTC(5) = 0.2599
-      XYWOB(1,5)  = 0.2550
-      XYWOB(2,5)  = 0.01304
-      EopTag(6) = 60257
-      TAIUTC(6)  = 37
-      UT1UTC(6) = 0.2581
-      XYWOB(1,6)  = 0.2534
-      XYWOB(2,6)  = 0.01272
-
-      NumSpace = 0
-
-
-! Setup WOBIF and UT1IF arrays:
-      WOBIF(1) = EOPTag(1) + 2400000.5D0
-      WOBIF(2) = EOPTag(2) - EOPTag(1)
-      WOBIF(3) = NumEop
-!
-      UT1IF(1) = EOPTag(1) + 2400000.5D0
-      UT1IF(2) = EOPTag(2) - EOPTag(1)
-      UT1IF(3) = NumEop
-      UT1IF(4) = 1.0D0 
-
-       Write(6,'("*1*UT1IF(4) ",4F15.6)') UT1IF
-      
-!
-       Xintv(1) = JStart + 2400000.5D0
-       Xintv(2) = JStop  + 2400000.5D0
-!
-!  Save leap seconds
-       Xleap_sec = TAIUTC(1)
-!
-      Do J = 1, NumEOP
-       UT1PT(J) = TAIUTC(J) - UT1UTC(J)
-       XYWOB(1,J) = XYWOB(1,J) * 1.D3
-       XYWOB(2,J) = XYWOB(2,J) * 1.D3
-      Enddo
+      NumSpace = 01
 
       Numsrc = NUMSTR
-!
-!
+
       Return
       End
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 !
-      SUBROUTINE GETCL(Calcfiles, IMfiles)
+      SUBROUTINE GETCL()
       IMPLICIT None
 !
       INCLUDE 'd_input.i'
@@ -934,21 +846,12 @@
 !                  David Gordon March 2015
 !                  David Gordon June 2015
 !
-!     CHARACTER*40  calc_file_name, Jobname, IM_file_name
-      CHARACTER*128 calc_file, IM_file
-      CHARACTER*128 Calcfiles(2000), IMfiles(2000)
-      CHARACTER*128 ch_cl
 !     CHARACTER*10  Base_mode, L_time
       Real*8  t_offsec
       Integer*4 Iar, I, Ic, Index, isec, Int_poly, i1, Ix, Iskip
       Integer*4 ierr, Icm1, l_scr, get4unit, iv, Kjob
 !
-      Do I = 1,128
-       calc_file(I:I) = ' '
-       Jobname(I:I) =   ' '
-       IM_file(I:I) =   ' '
-      Enddo
-!     calc_out_file =  'Null                                    '
+
       I_out = 0
       IM_out = 1
       SpOffset = 'NoOffset'
@@ -970,107 +873,59 @@
       int_poly = 120
 !   # of Calc epochs in each 2-minute interval
       epoch2m = (120.0001/d_interval) + 1
-!     write (6,*) ' d_interval, epoch2m: ', d_interval, epoch2m 
 !   # of input calc jobs
       Numjobs = 0
 !
-!   Find number of parameters on the command line
-       Iar = IARGC()
-!      write(6,*) '  '
-!      write(6,*) ' GETCL/Iar =  ', Iar
-! If no arguments, print out the help menu and terminate 
-       If (Iar .eq. 0) Call USAGE()
-        Iskip = 0
-!
-       Do I = 1, Iar
-          If (Iskip .eq. 1) Then   ! Next argument already read
-           Iskip = 0
-           Go to 100
-          Endif
-        Call GETARG(I,ch_cl)
-!
-         Ic = Index(ch_cl,'.calc')
-         If (Ic .ge. 2) Then
-          Numjobs = Numjobs + 1
-          Ijob = Ic-1
-          Jobname(1:Ijob) = ch_cl(1:Ijob)
-          Icalc = Ijob+5
-          calc_file(1:Icalc) = ch_cl(1:Icalc) 
-            Do Ix = Icalc+1, 128
-             calc_file(Ix:Ix) = ' '
-            Enddo
-          IM_file(1:Ijob) = Jobname(1:Ijob)
-!         IM_file(Ijob+1:Ijob+4) =  '.im'//CHAR(0)
-          IM_file(Ijob+1:Ijob+3) =  '.im'
-            Do Ix = Ijob+4, 128
-             IM_file(Ix:Ix) = ' '
-            Enddo
-          Calcfiles(Numjobs) = calc_file
-          IMfiles(Numjobs) = IM_file
-          Go to 100
-         Endif
-!
-         If (ch_cl(1:2) .eq. '-h') Call USAGE() 
-         If (ch_cl(1:6) .eq. '--help') Call USAGE()
-!        If (ch_cl(1:2) .eq. '-v') Verbose = 1
-!        If (ch_cl(1:9) .eq. '--verbose') Verbose = 1
-!        If (ch_cl(1:2) .eq. '-q') Verbose = -1
-!        If (ch_cl(1:7) .eq. '--quiet') Verbose = -1
 !        If (ch_cl(1:2) .eq. '-b') Base_mode = 'baseline  '
 !        If (ch_cl(1:2) .eq. '-m') Base_mode = 'master-stn'
-         If (ch_cl(1:3) .eq. '-lt') Then
-            L_time = 'solve     '
-            Go to 100
-         Endif
-         If (ch_cl(1:4) .eq. '-dry') Then
-            Atmdr  = 'no-Add-dry'
-            Go to 100
-         Endif
-         If (ch_cl(1:4) .eq. '-wet') Then
-            Atmwt  = 'no-Add-wet'
-            Go to 100
-         Endif
-         If (ch_cl(1:2) .eq. '-S' .or. ch_cl(1:8) .eq. '--Sekido') Then
-            NF_model = 'Sekido  '
-            Go to 100
-         Endif
-         If (ch_cl(1:2) .eq. '-R' .or. ch_cl(1:9) .eq. '--Ranging') Then
-            NF_model = 'Ranging '
-            Go to 100
-         Endif
-         If (ch_cl(1:2) .eq. '-D' .or. ch_cl(1:6) .eq. '--Duev') Then
-            NF_model = 'Duev    '
-            Go to 100
-         Endif
-         If (ch_cl(1:2) .eq. '-n' .or. ch_cl(1:6) .eq. '--stntrf') Then
-            DoStnPos = 2
-            Go to 100
-         Endif
-         If (ch_cl(1:2) .eq. '-s' .or. ch_cl(1:6) .eq. '--stnpos') Then
-            DoStnPos = 1
-            Go to 100
-         Endif
-         If (ch_cl(1:2) .eq. '-f') Then    ! force execution
-            overwrite = 'yes '
-!             write(6,*) ' Overwriting existing .im files! '
-            Go to 100
-         Endif
-         If (ch_cl(1:11) .eq. '-uncorr') Then   ! U,V,W: non-relativistic geometry 
-            UVW = 'uncorr'
-            Go to 100
-         Endif
-         If (ch_cl(1:11) .eq. '-approx') Then   ! U,V,W: geometry with aberration 
-            UVW = 'approx' 
-            Go to 100
-         Endif
-         If (ch_cl(1:11) .eq. '-exact ') Then   ! U,V,W: partial derivatives of delay
-            UVW = 'exact '
-            Go to 100
-         Endif
-         If (ch_cl(1:11) .eq. '-noatmo') Then   ! U,V,W: 'exact' but no atmosphere 
-            UVW = 'noatmo'
-            Go to 100
-         Endif
+!         If (ch_cl(1:3) .eq. '-lt') Then
+!            L_time = 'solve     '
+!            Go to 100
+!         Endif
+!         If (ch_cl(1:4) .eq. '-dry') Then
+!            Atmdr  = 'no-Add-dry'
+!            Go to 100
+!         Endif
+!         If (ch_cl(1:4) .eq. '-wet') Then
+!            Atmwt  = 'no-Add-wet'
+!            Go to 100
+!         Endif
+!         If (ch_cl(1:2) .eq. '-S' .or. ch_cl(1:8) .eq. '--Sekido') Then
+!            NF_model = 'Sekido  '
+!            Go to 100
+!         Endif
+!         If (ch_cl(1:2) .eq. '-R' .or. ch_cl(1:9) .eq. '--Ranging') Then
+!            NF_model = 'Ranging '
+!            Go to 100
+!         Endif
+!         If (ch_cl(1:2) .eq. '-D' .or. ch_cl(1:6) .eq. '--Duev') Then
+!            NF_model = 'Duev    '
+!            Go to 100
+!         Endif
+!         If (ch_cl(1:2) .eq. '-n' .or. ch_cl(1:6) .eq. '--stntrf') Then
+!            DoStnPos = 2
+!            Go to 100
+!         Endif
+!         If (ch_cl(1:2) .eq. '-s' .or. ch_cl(1:6) .eq. '--stnpos') Then
+!            DoStnPos = 1
+!            Go to 100
+!         Endif
+!         If (ch_cl(1:11) .eq. '-uncorr') Then   ! U,V,W: non-relativistic geometry 
+!            UVW = 'uncorr'
+!            Go to 100
+!         Endif
+!         If (ch_cl(1:11) .eq. '-approx') Then   ! U,V,W: geometry with aberration 
+!            UVW = 'approx' 
+!            Go to 100
+!         Endif
+!         If (ch_cl(1:11) .eq. '-exact ') Then   ! U,V,W: partial derivatives of delay
+!            UVW = 'exact '
+!            Go to 100
+!         Endif
+!         If (ch_cl(1:11) .eq. '-noatmo') Then   ! U,V,W: 'exact' but no atmosphere 
+!            UVW = 'noatmo'
+!            Go to 100
+!         Endif
 !
 !        If (ch_cl(1:2) .eq. '-o') I_out = 1
 !        If (ch_cl(1:3) .eq. '-im') IM_out = 0
@@ -1094,97 +949,29 @@
 !          Endif
 !        Endif
 !
-         If (ch_cl(1:2) .eq. '-v')  Then
-           Call GETARG(I+1,ch_cl)
-           Read(ch_cl,*,err=20) iv
-           Verbose = iv
-           Iskip = 1 
-           Go to 100
-  20        Continue
-           Verbose = 1
-           Go to 100
-         Endif
+!         If (ch_cl(1:2) .eq. '-v')  Then
+!           Call GETARG(I+1,ch_cl)
+!           Read(ch_cl,*,err=20) iv
+!           Verbose = iv
+!           Iskip = 1 
+!           Go to 100
+!  20        Continue
+!           Verbose = 1
+!           Go to 100
+!         Endif
 !
-         If (ch_cl(1:2) .eq. '-t') Then     
-           Call GETARG(I+1,ch_cl)
-           Read(ch_cl,*,err=22) t_offsec
-           t_offset = t_offsec/86400.D0
-           SpOffset = 'Offset  '
+!         If (ch_cl(1:2) .eq. '-t') Then     
+!           Call GETARG(I+1,ch_cl)
+!           Read(ch_cl,*,err=22) t_offsec
+!           t_offset = t_offsec/86400.D0
+!           SpOffset = 'Offset  '
 !          write(6,*) 't_offset ', SpOffset, t_offset
-           Iskip = 1 
-           Go to 100
-         Endif
+!           Iskip = 1 
+!           Go to 100
+!         Endif
 ! Process all .calc files in the current directory
-         If (ch_cl(1:3) .eq. 'all' .or. ch_cl(1:5) .eq. '--all' .or.    &
-     &       ch_cl(1:1) .eq. '*') Then     
-            If (I .ne. Iar) Then
-             Write(6,*) ' *, all, or --all must be the last command line argument, Quitting!'
-             Stop
-            Endif
-            If (Numjobs .ne. 0) Then
-             Write(6,*) ' Illegal combination of jobs, Quitting! '
-             Stop
-            Endif
-            l_scr = get4unit()
-            Open(unit=l_scr,file='scr_file',status='unknown')
-            Close(unit=l_scr,status='Delete')
-           ierr = SYSTEM('ls *.calc > scr_file')
-            Open(unit=l_scr,file='scr_file',status='old')
- 60          Continue
-              Read(l_scr,'(A128)',end=70) calc_file 
-               Numjobs = Numjobs + 1 
-               Calcfiles(Numjobs) = calc_file
-               IM_file = calc_file
-                Icm1 = Index(calc_file,'.calc')
-               IM_file(Icm1:Icm1+5) = '.im   '
-               IMfiles(Numjobs) = IM_file
-               Go to 60
- 70           Continue
-!           Close(unit=l_scr,status='Delete')
-            Close(unit=l_scr)
-           Go to 110
-         Endif
-        
-! If we are here, then there is an unrecognized argument.
-  80    Continue
-        Write (6,*) '  '
-        Write (6,*) ' Unrecognized command line argument: ', ch_cl
-        Write (6,*) ' Quitting!  '
-        Write (6,*) '  '
-        Stop
-!       Call USAGE()
-!
- 100    Continue
-       Enddo
- 110   Continue
-!       Write (6,*) '  '
-!       Write (6,*) '  '
-!         Do I = 1, Numjobs
-!            Write (6,*) I,Calcfiles(I),IMfiles(I)
-!         Enddo
-!       Write (6,*) '  '
-!       Write (6,*) '  '
-!
-! Check for no jobs
-        If (Numjobs .eq. 0) Then
-         Write (6,*) '  '
-         Write (6,*) ' No jobs to process, Quitting! '
-         Write (6,*) '  '
-         Stop
-        Endif
-!
-!       If (I_out .eq. 1) Then
-!         calc_out_file(1:Ijob) = Jobname(1:Ijob)
-!         calc_out_file(Ijob+1:Ijob+9) =  '.calc.out'
-!         write (6,*) ' calc_out_file ', calc_out_file
-!       Endif
-!      write(6,*) ' Verbose ', Verbose
-!
-      Return
- 22   Continue
-       Write (6,*) 'Error reading time offset. Stopping. '
-!      Write (6,*) 'Illegal epoch interval. Stopping. '
-       Stop
+
+      return
       End
 !
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
