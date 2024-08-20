@@ -7,7 +7,10 @@ Port of difxCalc11 to create a library version, while retaining all functionalit
 
 This code builds in the normal autoconf way:
 ```
-make
+git clone  ssh://git@bitbucket.csiro.au:7999/~phi196/calc11.git
+git checkout calc11-chris
+./bootstrap.sh
+make -j install
 ```
 
 ## 
