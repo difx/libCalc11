@@ -1,12 +1,8 @@
-      SUBROUTINE dSTART11 (Num_Scans, Kjob)
+      SUBROUTINE CALCINIT ()
       IMPLICIT None
 !
-!           Input variables:
-!             1) calc_file_name - Job file '.calc' file name.
-!
-!     CHARACTER*128 calc_file_name, Finite_name
-      Logical*4     Finite_model
-!
+
+
 !      Common blocks used -
 !
       INCLUDE 'ccon.i'
@@ -40,6 +36,7 @@
 !         5. JPL_DE421
 !
       INCLUDE 'd_input.i'
+      INCLUDE 'cuser11.i'
 !
       INCLUDE 'c2poly.i'
 !
@@ -53,16 +50,13 @@
 !                          2) The fraction of a UTC day from 0:00 hours
 !                          to the desired epoch.
 !
-      Real*8    XCALC, FJLDY
+      Real*8    XCALC
       Integer*2 NFLAG,NFLAGC,loadm(8),LFILE(3)
       COMMON /STACM/ Computing_center,XCALC,NFLAG,NFLAGC,loadm,LFILE
 !
 !     Integer*4 gethostname, ierr4
-      Integer*4 imode, ILU, iout, idd1, Kjob
       Character*64 Computing_center
       Character*6 C_LFILE
-      Character*128 CALCON_NAME
-      Character*75 Lhist1
       Equivalence (C_LFILE,LFILE)
 !
 !       Variables 'from':
@@ -70,55 +64,21 @@
 !         2. NFLAG     - The total number of CALC flow control and debug flags.
 !         3. LFILE(3)  - The name of the CALC control file.
 !         4. XCALC     - The CALC version number.
-!         5. Kjob      - Incrmental job number. If .gt. 1, do not call get4unit.
 !
 !   Program specifications -
 !
-      Real*8    JDY2K
-      Real*8    FJD2, Fday, Fhr, Fmin
-      Real*8    JD1, JD2, Xmin, StrtUTCmin, StopUTCmin, ProcMin 
-      Integer*4 Min2, MinStrt, MinStop, StopSec, StopMin, Num2Min,     &
-     &          StopHr, StopDay, StopMo, StopYr
-!
-!     Integer*4 Iyear, Imonth, Iday
       Integer*4  IFLAG(62)
       Integer*2  LCALC(40), LFCIO(40), LHIST(66), LNAME(5), LNAMO(5), &
-     &           IBUF(40),      trimlen, host_len, hist_len
-      Integer*4 Ipid, Getpid, jj, IOS
-      Real*8 xleap(5), tol
+     &           IBUF(40)
       CHARACTER LNAME_chr*10, LNAMO_chr*10, LFCIO_chr*80, LHIST_chr*132
-      Character*8  Ich8
-      Character*80 Ich80
-      CHARACTER*80 CBUF,CTIME*12,CDATE*16
+      CHARACTER*80 CBUF
       EQUIVALENCE  ( IFLAG(1),  KATMC ),  ( LCALC(1), LHIST(1) ), &
      &             ( IBUF, CBUF), (LNAME,LNAME_chr), &
      &             ( LNAMO,LNAMO_chr), (LFCIO,LFCIO_chr), &
      &             ( LHIST,LHIST_chr)
-      Integer*4 get4unit
-!     Integer*2 IPAR(5),          kruc, iveri, lfvo, isame, ivero, &
-!    &          kerr, NDO(3), idd2
-      Integer*4 I, N, Unit1, Unit2, isz, iup, MXUTPM, Num_Scans
-      Integer*4 IMNTHS(12)
-      DATA IMNTHS /31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31/
-      Character*80 xtlt
-      Character*24 STR24
-!     Save      Unit1, Unit2
-!     CHARACTER*10 IPAR_C
-!     EQUIVALENCE (IPAR,IPAR_C)
-!     DATA  KRUC / 2 /
-!     Data  Lhist1 / &
-!    &   ' &
-!    &             '/
-!     Data Unit1 /0/
-!
-!
-!     External I/O
-!       Input variables:
-!         1. Non-default model module and utility routine flow control and
-!                          debug output flags.
-!       Output variables:
-!         1. All model and module utility routine flow control and debug
-!                          output flags.
+      Integer*4 N, MXUTPM, IK, KJ
+!      Integer*4 IMNTHS(12)
+!      DATA IMNTHS /31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31/
 !
 !     Program variables -
 !         1. IFLAG(NFLAG) -  The variable used to initialize all flow
@@ -129,21 +89,97 @@
 !
 !     Programmer - David Gordon Jan-Apr, 2013 
 !
-!   dSTART Program Structure
-!
+      C_mode = 'difx  '
 
-      ILUOUT = iout
+      ILUOUT = 0
       MXUTPM = 20
-!
-!   Initialize all flow control and debug output flags to zero.
+
+      I_out = 0
+      IM_out = 1
+      Verbose = 0
+      SpOffset = 'NoOffset'
+
+! Baseline mode.   => not currently used
+      Base_mode = 'geocenter '
+!     Base_mode = 'baseline  '
+!     Base_mode = 'master-stn'
+
+!     Atmdr          - 'Add-dry   ' or 'no-Add-dry' atmosphere.
+!     Add or not dry atmosphere model
+      Atmdr  = 'Add-dry   '
+!     Atmdr  = 'no-Add-dry'      
+
+!     Atmwt          - 'Add-wet   ' or 'no-Add-wet' atmosphere.
+!     Add or not wet atmosphere model
+      Atmwt  = 'Add-wet   '
+!     Atmwt  = 'no-Add-wet'
+
+!     L_time  - 'dont-solve' or 'solve' for light travel time from spacecraft. Default is 'dont-solve'. 
+      L_time = 'dont-solve'
+!     L_time = 'solve     '
+
+      NF_model = 'Duev    '
+! Modified Sekido near-field model
+!     NF_model = 'Sekido  '
+! Satellite ranging near-field model.      
+!     NF_model = 'Ranging '
+! Duev near-field model. (default)      
+!     NF_model = 'Duev    '
+
+! Station positions - not sure what default does      
+      DoStnPos = 0
+! Write station J2000 positions. 
+!     DoStnPos = 1
+! Write station ITRF positions
+!     DoStnPos = 2
+
+! Type of UVW to calculate
+      UVW = 'exact '
+!     -uncorr            U,V,W: non-relativistic geometry.
+!     UVW = 'uncorr'
+!     -approx            U,V,W: n-r geometry with aberration.
+!     UVW = 'approx' 
+!     -noatmo            U,V,W: exact but no atmosphere.
+!     UVW = 'noatmo'
+
+
+!      Interval between Calc runs (default is every 24 seconds 
+      d_interval = 24.D0
+!      int_poly = 120
+!   # of Calc epochs in each 2-minute interval - Should allow this to be set
+      epoch2m = (120.0001/d_interval) + 1
+
+!     # of input calc jobs
+      Numjobs = 0
+
+! Spacefraft handling stuff - removed from this version. Check d_Input from DIFXCalc11
+!      t_offset = 0
+!     SpOffset = 'Offset  '
+
+!     Initialize all flow control and debug output flags to zero.
       DO N = 1, NFLAG
-         IFLAG(N) = 0
+        IFLAG(N) = 0
       end do
-!
+       
+
+      JobId = 1
+      NumSit = 0
+      NumSpace = 0
+      NUMSTR = 1
+      NumSrc = 1
+      SpFrame = 'ECJ2'
+      NumScans = 1
+      Do IK=1, Max_Stat
+        SITAXO(IK) = 0.D0
+        Do KJ=1,3
+          SITXYZ(KJ,IK) = 0.D0
+        Enddo
+      Enddo
+       
 !
 !   Get the apriori's from the .calc file.
-      Call dGet_input()
-       Num_Scans = NumScans
+      call dGet_input()
+
 !
 ! Set Geocenter station;
       Zero_site = 1
@@ -207,259 +243,6 @@
 !                                    from Common /STACM/.
       END
 !**********************************************************************
-      SUBROUTINE dGETEOP()
-      Implicit None
-!
-!     Get Earth orientation table from an external file.
-!      This routine reads a SOLVE-format EOP Mod file.
-!
-!     Common blocks used -
-!
-      INCLUDE 'input11.i'
-!            Variables 'from':
-!              1. Ex_EOP - File name of the external EOP input file
-!
-      INCLUDE 'cmxut11.i'
-!            Variables 'from':
-!              1. Xintv(2)  - First and last Julian Date in the data base
-!            Variables 'to':
-!              1. UT1IF(4)  - The final UT1 information array. This array
-!                             contains respectively: 1) The Julian date of the
-!                             first tabular point, 2) The increment in days of
-!                             the tabular points, 3) The number of tabular
-!                             points, 4) The units of the UT1 tabular array per
-!                             second. (days, days, unitless, sec/table unit)
-!              2. UT1PT(20) - The tabular values of 'TAI minus UT1'.
-!                             (table units)
-!              3. ISHRTFL   - The short period tidal terms flag, (unitless).
-!                             = 1 --> UT1 table coming from input database is
-!                             true UT1, (that is, fortnightly tidal terms have
-!                             not been removed, as in the IRIS or IERS series).
-!                             = -1 --> UT1 table coming from input database is
-!                             UT1R, (that is, the Yoder fortnightly tidal terms
-!                             HAVE been removed as in Bulletin B).
-!                             = -2 --> UT1 table coming from input database is
-!                             UT1S, (the S tidal terms HAVE been removed).
-!              4. Leap_fix   - Used in external input mode. .True. means
-!                              correct the input EOP series for accumluated
-!                              leap seconds. .False. means do not correct.
-!              5. UT1type    - UT1 data type: 'UT1-TAI ' or 'UT1-UTC '.
-!                              For ''UT1-UTC ', leap second corrections
-!                              must be made.
-!              6. EOP_time_scale - EOP table time scale, allowed values:
-!                              'TAI     ', 'TCG     ', 'TDB     ',
-!                              'TDT     ', 'UTC     ', 'UNDEF   '.
-!                              Assumed default if not present => TDB
-!
-      INCLUDE 'cmwob11.i'
-!            Variables 'to':
-!              1. WOBIF(3)  -  The wobble information array. Contains
-!                              respectively: 1) The Julian date of the first
-!                              tabular point, 2) The increment in days of the
-!                              tabular points, 3) The number of tabular points.
-!                              (days, days, unitless)
-!              2. XYWOB(2,20)- The wobble tabular points for the polar motion
-!                              (wobble) X & Y offsets. (milliarcsec)
-!                              (Note: Based on old BIH conventions, offsets
-!                              are assumed to be left-handed.)
-!
-!   Program Specifications -
-      Real*8      JD1, Uintv, Xmjdm, Mjdm, Mjds, Xmjds, XJDT, X10, Y10, &
-     &            UT1T, Xmjdl, JD2
-      Integer*4   Get4unit, Iunit, Npts, Nerp, I, IOS
-      Character*4 Utflag
-      Integer*2   KERR, idd3
-      Character   EOP_ID*15, dummy1*1
-!
-!   Program variables:
-!          JD1    - First (full) Julian Day in EOP file
-!          JD2    - Last (full) Julian Day in EOP file
-!          Uintv  - EOP interval (usually 1.0 days)
-!          Npts   - Number of points in the input EOP file
-!          Nerp   - Number of trabular points to use in the UT1 and polar
-!                   motion interpolation tables
-!          Utflag - Type of UT1 data (UT1, UT1R, UT1S)
-!          Xmjdm  - Experiment midpoint (FJD)
-!          Mjdm   - Experiment midpoint (MJD)
-!          Mjds   - Time of first tabular point (MJD)
-!          Xmjds  - Time of first tabular point (FJD)
-!          Xmjdl  - Time of last tabular point (FJD)
-!          Kjob   - Job number. If .gt. 1, do not call get4unit again.
-!
-!     Programmer:
-!      98.04.27  David Gordon - Original program written
-!      99.11.19  David Gordon - Bug fix, CLOSE(Iunit) statements added.
-!      99.11.23  David Gordon - Setting number of EOP points to 15 always,
-!                               for compatability with Dbedit/Apriori and
-!                               SOLVE.
-!    2000.12.11  David Gordon - Modify to skip comment statements in EOP
-!                               mod file.
-!    2000.12.29  David Gordon - Modify to read/interpret new EOP mod file
-!                               table header record.
-!-----------------------------------------------------------------------
-!
-         Leap_fix = .False.
-!
-!  Open the EOP file
-!
-       Iunit = Get4unit()
-       OPEN (unit=Iunit, file=Ex_EOP, status='old', Action='READ',      &
-     &       err=99, Iostat=Ios)
-       Go to 101
-  99   Continue
-       Write(6,'(" Error opening external EOP file. Quitting! ")')
-       Call TERMINATE_CALC ( 'GETEOP', int2(1), int2(IOS))
- 101   Continue
-!
-!  Read new EOP mod file format. 2000.12.29
-       Read(Iunit,1016,err=88) EOP_ID, JD1, Uintv, Npts, UT1type, &
-     &                  EOP_time_scale
- 1016  Format (A15,2X,F9.1,2X,F4.1,2X,I5,2X,A8,2X,A8)
-!
-       If (UT1type .eq. 'UT1-TAI ') Then               ! Normal case
-         Utflag = 'UT1 '
-         ISHRTFL =  1
-         Leap_fix = .False.
-         Go to 102
-       Endif                                           ! Normal case
-!
-       If (UT1type .eq. 'UT1-UTC ') Then               ! Abnormal case
-         Utflag = 'UT1 '
-         ISHRTFL =  1
-!          Will need to subtract leap seconds later (in UT1I)
-         Leap_fix = .True.
-         Go to 102
-       Endif                                           ! Abnormal case
-!
-!  If here, UT1type not properly defined. ?????
-       Write(6,'(" Illegal UT1type in EOP mod file! Quitting! ")')
-       Call TERMINATE_CALC ( 'GETEOP', int2(1), int2(IOS))
-!
-  88   Continue
-!  Old format, just in case
-       Backspace (Iunit)
-       Read(Iunit,1018, err=89) JD1, Uintv, Npts, Utflag
- 1018  Format (F9.1, F4.0, I4, 1X, A4)
-       Write(6,'(/,"  !!! Using old EOP mod file format !!!",/)')
-!
-       Leap_fix = .False.
-       UT1type = 'UT1-TAI '
-       EOP_time_scale = 'UNDEF   '
-!   Determine what the short period tidal term flag should be
-       IF(Utflag .eq. 'UT1 ') ISHRTFL =  1
-       IF(Utflag .eq. 'UT1S') ISHRTFL = -2
-       IF(Utflag .eq. 'UT1R') Then
-         ISHRTFL = -1
-         Write(6,'(" Cannot use UT1R data! Quitting! ")')
-         Call TERMINATE_CALC ('GETEOP', int2(1), int2(Ios))
-       ENDIF
-!
-!**   Write(6,'(" ISHRTFL = ",I3)') ISHRTFL
-       Go to 102
-  89   Continue
-       Write(6,'(" Cannot read EOP file! Quitting! ")')
-       Call TERMINATE_CALC ('GETEOP', int2(1), int2(Ios))
-!
- 102  Continue
-!
-!  Number of points in table. Set to 15 when data interval less than 2.0 days.
-!   Increase by 1 for each additional day, up to 20 points.
-       Nerp = 15
-!   Set to 15 in all cases! 99.11.23 -DG-
-!*     Nerp = 14 + (xintv(2)-xintv(1))
-!*     If (Nerp .lt. 15) Nerp = 15
-!*     If (Nerp .gt. 20) Nerp = 20
-!
-!  Midpoint of experiment
-       Xmjdm = (Xintv(1) + Xintv(2)) / 2.D0
-!  First tabular point at midnight prior to (Nerp*Uintv)/2 days before midpoint
-       Mjdm = Xmjdm - 2400000.5D0
-       Mjds = Dint (Mjdm - (Nerp*Uintv)/2.D0)
-!   First point at time Xmjds:
-       Xmjds = Mjds + 2400000.5D0
-!
-!  Check if EOP file does not start early enough:
-! !! Require 15 points in all cases!!! 99.11.23 -DG-
-       If (Xmjds .lt. JD1) Then
-!*       Need at least one point before first observation time in data base
-!*       If ( (Xintv(1) - Uintv) .lt. JD1 ) Then
-           Write(6,'("GETEOP: Not enough EOP points before database")')
-            KERR = 0
-            Close (Iunit)
-           CALL TERMINATE_CALC ('GETEOP', int2(1), KERR)
-!*       Else
-!*         Recompute Nerp and reset first tabular point to JD1
-!*         Nerp = Nerp - (JD1-Xmjds+.01)/Uintv
-!*         Xmjds = JD1
-!*       Endif
-       Endif
-!
-!  Check if EOP file ends too early:
-! !! Require 15 points in all cases!!! 99.11.23 -DG-
-       Xmjdl = Xmjds + (Nerp-1)*Uintv
-       JD2 = JD1 + (Npts-1)*Uintv
-       If (Xmjdl .gt. JD2) Then
-!*       Need at least one point after last observation time in data base
-!*       If ( (Xintv(2) + Uintv) .gt. JD2 ) Then
-           Write(6,'("GETEOP: Not enough EOP points after database")')
-            KERR = 0
-            Close (Iunit)
-           CALL TERMINATE_CALC ('GETEOP', int2(1), KERR)
-!*       Else
-!          Recompute Nerp
-!*         Nerp = Nerp - ( Xmjdl-JD2+.01)/Uintv
-!*       Endif
-       Endif
-!
-!     Write(6,1021) Xintv, Xmjdm, Mjdm, Mjds, Xmjds
-!1021 Format ('Xintv(2), Xmjdm, Mjdm, Mjds, Xmjds: ',2F20.8,/,5X,
-!    *        4F19.8)
-!
-!  Fill the UT1 and Wobble information arrays
-       UT1IF(1) = Xmjds
-       UT1IF(2) = Uintv
-       UT1IF(3) = Nerp
-       UT1IF(4) = 1.0D0
-!
-       WOBIF(1) = Xmjds
-       WOBIF(2) = Uintv
-       WOBIF(3) = Nerp
-!**   Write(6,'(" WOBIF(3) ",3F15.6)') WOBIF
-!
-!  Get the EOP points:
-!   Read till first point found
-  50   Continue
-       Read (Iunit,*,err=50) XJDT, X10, Y10, UT1T
-!      Read (Iunit,1019) XJDT, X10, Y10, UT1T
- 1019  Format (F9.1, 2F8.4, I10)
-!
-       If (DABS(XJDT - XMJDS) .le. 1.D-8) Then
-         Backspace (Iunit)
-         Go to 70
-       Else
-         Go to 50
-       Endif
-!
-  70   Continue
-       Do I = 1,Nerp
-!      Read (Iunit,1019) XJDT, X10, Y10, UT1T
-       Read (Iunit,*) XJDT, X10, Y10, UT1T
-!  Input units are : X/Y => 0.1 arc-sec; UT1 => microseconds
-!  Convert to milli-arc-seconds and time seconds, and change
-!   UT1-TAI to TAI-UT1 (or UT1-UTC to UTC-UT1)
-       UT1PT(I) = -UT1T/1.D6
-       XYWOB(1,I) = X10/10.D0 * 1.D3
-       XYWOB(2,I) = Y10/10.D0 * 1.D3
-!
-       Enddo
-!      Write (6,1023)   (XYWOB(1,I), XYWOB(2,I), UT1PT(I), I=1,Nerp)
-!1023  Format (' External EOPs: ',20(/,3F20.10))
-!
-       Close(Iunit)
-!
-       Return
-       End
-!**********************************************************************
       REAL*8 FUNCTION JDY2K (IYEAR, IMONTH, IDAY)
       Implicit None
 !
@@ -510,90 +293,6 @@
      &        2x,3I5,5x,3I5,/,' JDY2K ', F15.2)
       Return
       End
-!
-!**********************************************************************
-      SUBROUTINE YMDJL(FJD, IYEAR, IMONTH, IDAY)
-      Implicit none
-!
-!     Convert Julian date at midnight to month, day and year.
-!     Copied from PEP plus an additional .5 day to convert
-!     from Julian date at midnight to the PEP Julian day number.
-!
-!     INPUT Variables:
-      REAL*8 FJD
-!
-! FJD = Julian date at midnight
-!
-!     OUTPUT Variables:
-      INTEGER*4 IMONTH,IDAY,IYEAR,ITIME
-!
-! IDAY = Day of the month
-! IMONTH = Month of the year (1-12)
-! IYEAR = Year of the century (0-99)
-!       => Changed to full 4-digit year
-! ITIME - Number of centuries since 1900
-!
-!     LOCAL VARIABLES
-      INTEGER*2 MDN(13),nyr,ic,inyr,i
-      Real*8 XJD
-      DATA MDN/0,31,59,90,120,151,181,212,243,273,304,334,365/
-!
-! IC - Number of centuries sice 0 January 1600
-! INYR - Leap year days since 0 January 1600
-! MDN - Array containing day of year at end of each month
-! NYR - Number of years since 0 January 1600
-! XJD - Days since 0 January 1600
-!
-!     HISTORY
-!   WHO   WHEN     WHAT
-!   DSR  7608??    Created
-!   DG  2012.04.26 Integer*4 and 4-digit year mods.
-!
-!     YMDJL PROGRAM STRUCTURE
-!
-      XJD = FJD - 2305447.0D0 + 0.5D0
-      NYR = XJD/365.
-   16 IC = NYR/100
-!     DAYS DUE TO LEAP YEARS
-      INYR = XJD - NYR*365.0
-      IDAY = INYR - (NYR-1)/4 + (NYR + 99)/100 - (NYR + 399)/400 - 1
-      IF(IC .NE.0) GO TO 20
-      IF(NYR.NE.0) GO TO 20
-      IDAY = IDAY + 1
-   20 IF(IDAY .GT. 0) GO TO 23
-      NYR = NYR - 1
-      GO TO 16
-!**** IYEAR (O THRU 99) YEAR OF THE CENTURY
-   23 IYEAR = NYR - IC * 100
-      ITIME = IC - 3
-      NYR = IYEAR
-      IF(NYR .NE. 0) GO TO 27
-      IF(MOD(IC,INT2(4)) .NE. 0) GO TO 34
-      GO TO 30
-   27 IF(MOD(NYR,INT2(4)) .NE. 0) GO TO 34
-!
-! Replacing ancient code:
-!  30 IF(IDAY - 60) 34,39,32
-   30 Continue
-      If((IDAY-60) .lt. 0) Go to 34
-      If((IDAY-60) .eq. 0) Go to 39
-      If((IDAY-60) .gt. 0) Go to 32
-!  
-   32 IDAY = IDAY - 1
-   34 DO 36 I=2,13
-          IF(IDAY .LE. MDN(I)) GO TO 40
-   36 CONTINUE
-   39 IMONTH = 2
-      IDAY = 29
-      GO TO 45
-   40 IMONTH = I - 1
-      IDAY = IDAY - MDN(IMONTH)
-   45 CONTINUE
-! Modified - 4 digit year
-       IYEAR = IYEAR + 1900 + ITIME*100
-!
-      RETURN
-      END
 !
 !**********************************************************************
       SUBROUTINE dGet_input()
@@ -741,55 +440,10 @@
 !                                    Declination for each star. (Radians)
 !
 !
-!     CHARACTER*128 calc_file_name
-      CHARACTER*26 Sou26, Sp26
-      CHARACTER*12 Site12, Scan12
-      Real*8    StartMJD, EopTag(20), TAIUTC(20),        &
-     &          UT1UTC(20), ADJUSTL, X_Sp
-      Integer*4 AntNum, SrcNum,          EopNum, SpNum
-      Integer*4 I, J, Unit1, IOS, IX, IK, KJ, I_Sp, L
-      Integer*4 get4unit
-      Character*6 Mount6 
-      Save      Unit1
-!
+
       INCLUDE 'd_input.i'
-!     COMMON/Calc_input/ SrcName, ScanID, Sites, Axis, JobID, NumScans, &
-!    &       StartYr, StartMo, StartDay, StartHr, StartMin, StartSec,   &
-!    &       ScanStrt, ScanDur
-!     Character*10 SrcName(100), ScanID
-!     Character*8 Sites(Max_stat)
-!     Integer*4 JobID, NumScans
-!     Integer*4 StartYr, StartMo, StartDay, StartHr, StartMin, StartSec
-!     Integer*4 ScanStrt, ScanDur
-!     Character*4 Axis(Max_Stat) 
-!
-!     COMMON/NFO/ SpTag, SpPos, SpVel, NumSpace, NumRows, SpName 
-!     Character*10 SpName(10)
-!     Real*8 SpTag(100,10), SpPos(100,3,10), SpVel(100,3,10)
-!     Integer*4 NumSpace, Numrows(10)
-!
-!!    Character*8 SrcName(10)
       Character*20 SrcName(MAX_ARC_SRC)
       Equivalence (LNSTAR(1,1), SrcName(1))
-
-!  Need to initialize stuff:
-!
-       NumSit = 0
-       NumStr = 0
-       NumSpace = 0
-       SpFrame = 'ECJ2'
-       Do IK=1, Max_Stat
-         SITAXO(IK) = 0.D0
-         Do KJ=1,3
-          SITXYZ(KJ,IK) = 0.D0
-         Enddo
-       Enddo
-!
-
-!
- 100  Continue
-!
-      JobID = 1
 
       call set_times(60255.68715277778d0, 60255.6875d0)
 
@@ -800,11 +454,8 @@
       call load_ant('AK02', 'AZEL', 0.00000d0, -2556109.97953037d0, 5097388.70113492d0, -2848440.13354315d0)
       call load_ant('AK03', 'AZEL', 0.00000d0, -2556121.90976612d0, 5097392.35165232d0, -2848421.53643228d0)
       
-      NUMSTR = 1
-
       call load_source(1, '1934-638', 5.1d0, -1.0d0)
       
-      NumScans = 1
 
 !     Number of  EOPs
       WOBIF(3) = 0 
@@ -815,165 +466,9 @@
       call load_eop(60256, 37, 0.2599, 0.2550,  0.01304)
       call load_eop(60257, 37, 0.2581, 0.2534,  0.01272)
       
-      NumSpace = 01
-
-      Numsrc = NUMSTR
-
       Return
       End
-!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-!
-      SUBROUTINE GETCL()
-      IMPLICIT None
-!
-      INCLUDE 'd_input.i'
-!       To variables:
-!        3) Numjobs        - Number of .calc files that will be processed.
-!!!!!    4) Base_mode      - Baseline mode: 'geocenter' or 'baseline'.
-!!!!!                        Default is 'geocenter'  => not currently used.
-!        5) L_time         - 'dont-solve' or 'solve' for light travel
-!                            time from spacecraft. Default is 'dont-solve'. 
-!        6) Atmdr          - 'Add-dry   ' or 'no-Add-dry' atmosphere. 
-!        7) Atmwt          - 'Add-wet   ' or 'no-Add-wet' atmosphere. 
-!
-!   Local variables
-!        1) Calcfiles(n)   - List of input .calc files
-!        2) IMfiles(n)     - List of output .im files
-!        3) calc_file - Input '----.calc' file name.
-!        4) IM_file   - Output '----.im' file name.
-!
-!     Programmer - David Gordon Jan-Apr, 2013 
-!                  David Gordon March 2015
-!                  David Gordon June 2015
-!
-!     CHARACTER*10  Base_mode, L_time
-      Real*8  t_offsec
-      Integer*4 Iar, I, Ic, Index, isec, Int_poly, i1, Ix, Iskip
-      Integer*4 ierr, Icm1, l_scr, get4unit, iv, Kjob
-!
 
-      I_out = 0
-      IM_out = 1
-      SpOffset = 'NoOffset'
-!  Defaults:
-      Base_mode = 'geocenter ' 
-      L_time = 'dont-solve'
-      Atmdr  = 'Add-dry   '
-      Atmwt  = 'Add-wet   '
-      Verbose = 0
-      t_offset = 0.D0
-!     NF_model = 'Sekido  '
-      NF_model = 'Duev    '
-      DoStnPos = 0
-      overwrite = 'no  '
-      UVW = 'exact '
-!   Interval between Calc runs (default is every 24 seconds 
-!      for VLBA DiFX correlator).
-      d_interval = 24.D0
-      int_poly = 120
-!   # of Calc epochs in each 2-minute interval
-      epoch2m = (120.0001/d_interval) + 1
-!   # of input calc jobs
-      Numjobs = 0
-!
-!        If (ch_cl(1:2) .eq. '-b') Base_mode = 'baseline  '
-!        If (ch_cl(1:2) .eq. '-m') Base_mode = 'master-stn'
-!         If (ch_cl(1:3) .eq. '-lt') Then
-!            L_time = 'solve     '
-!            Go to 100
-!         Endif
-!         If (ch_cl(1:4) .eq. '-dry') Then
-!            Atmdr  = 'no-Add-dry'
-!            Go to 100
-!         Endif
-!         If (ch_cl(1:4) .eq. '-wet') Then
-!            Atmwt  = 'no-Add-wet'
-!            Go to 100
-!         Endif
-!         If (ch_cl(1:2) .eq. '-S' .or. ch_cl(1:8) .eq. '--Sekido') Then
-!            NF_model = 'Sekido  '
-!            Go to 100
-!         Endif
-!         If (ch_cl(1:2) .eq. '-R' .or. ch_cl(1:9) .eq. '--Ranging') Then
-!            NF_model = 'Ranging '
-!            Go to 100
-!         Endif
-!         If (ch_cl(1:2) .eq. '-D' .or. ch_cl(1:6) .eq. '--Duev') Then
-!            NF_model = 'Duev    '
-!            Go to 100
-!         Endif
-!         If (ch_cl(1:2) .eq. '-n' .or. ch_cl(1:6) .eq. '--stntrf') Then
-!            DoStnPos = 2
-!            Go to 100
-!         Endif
-!         If (ch_cl(1:2) .eq. '-s' .or. ch_cl(1:6) .eq. '--stnpos') Then
-!            DoStnPos = 1
-!            Go to 100
-!         Endif
-!         If (ch_cl(1:11) .eq. '-uncorr') Then   ! U,V,W: non-relativistic geometry 
-!            UVW = 'uncorr'
-!            Go to 100
-!         Endif
-!         If (ch_cl(1:11) .eq. '-approx') Then   ! U,V,W: geometry with aberration 
-!            UVW = 'approx' 
-!            Go to 100
-!         Endif
-!         If (ch_cl(1:11) .eq. '-exact ') Then   ! U,V,W: partial derivatives of delay
-!            UVW = 'exact '
-!            Go to 100
-!         Endif
-!         If (ch_cl(1:11) .eq. '-noatmo') Then   ! U,V,W: 'exact' but no atmosphere 
-!            UVW = 'noatmo'
-!            Go to 100
-!         Endif
-!
-!        If (ch_cl(1:2) .eq. '-o') I_out = 1
-!        If (ch_cl(1:3) .eq. '-im') IM_out = 0
-!        If (ch_cl(1:2) .eq. '-e') Then     
-!          Call GETARG(I+1,ch_cl)
-!          Read(ch_cl,*,err=22) isec
-!          If (isec .ge. 1 .and. isec .le. 60) Then
-!37         continue
-!           i1 =  int_poly/isec
-!           if(i1*isec .ne. int_poly) then 
-!            isec = isec-1
-!            go to 37
-!           endif
-!             # of seconds between Calc epochs
-!           d_interval = isec
-!             # of Calc epochs in each 2-minute interval
-!           epoch2m = (120.0001/d_interval) + 1
-!            write (6,*) ' d_interval, epoch2m: ', d_interval, epoch2m 
-!          Else
-!            Write (6,*) 'Calc epoch interval set to default value.'
-!          Endif
-!        Endif
-!
-!         If (ch_cl(1:2) .eq. '-v')  Then
-!           Call GETARG(I+1,ch_cl)
-!           Read(ch_cl,*,err=20) iv
-!           Verbose = iv
-!           Iskip = 1 
-!           Go to 100
-!  20        Continue
-!           Verbose = 1
-!           Go to 100
-!         Endif
-!
-!         If (ch_cl(1:2) .eq. '-t') Then     
-!           Call GETARG(I+1,ch_cl)
-!           Read(ch_cl,*,err=22) t_offsec
-!           t_offset = t_offsec/86400.D0
-!           SpOffset = 'Offset  '
-!          write(6,*) 't_offset ', SpOffset, t_offset
-!           Iskip = 1 
-!           Go to 100
-!         Endif
-! Process all .calc files in the current directory
-
-      return
-      End
-!
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
       SUBROUTINE FixEpoch(JTAG, TAG_SEC)
       IMPLICIT None

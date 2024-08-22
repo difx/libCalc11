@@ -19,16 +19,14 @@ Logical  exist
 ! 1.2.8 PROGRAM VARIABLES -
 !           ILU  - The message LU, set to 6. [Not used anywhere?]
 !  Define the calc mode:
-C_mode = 'difx  '
+
 !
 Kjob = 1
 !
 
-call getcl()
-
       
-!   Initialize dCALC 
-CALL dSTART11(Num_scans, Kjob)
+!   Initialize calc 
+CALL calcinit()
 
 !
 !   Initialize the model modules and the necessary utilities.

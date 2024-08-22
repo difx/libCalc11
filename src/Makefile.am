@@ -63,7 +63,7 @@ libcalc11_la_SOURCES = \
 	load_ant.f \
 	load_eop.f \
 	set_times.f \
-	dstart11.f
+	calcinit.f
 
 # Install headers
 include_HEADERS = parsevis.h \
