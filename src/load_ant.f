@@ -10,15 +10,15 @@
 
       NUMSIT = NUMSIT + 1
 
-      IF (NUMSIT+1.GT.Max_stat) THEN
+      IF (NUMSIT.GT.Max_stat) THEN
          LOAD_ANT = -1
       ELSE
-        Sites(NUMSIT+1) = SITE_NAME
-        Axis(NUMSIT+1) = ANT_AXIS
-        SITAXO(NUMSIT+1) = AXIS_OFF
-        SITXYZ(1,NUMSIT+1) = X
-        SITXYZ(2,NUMSIT+1) = Y
-        SITXYZ(3,NUMSIT+1) = Z
+        Sites(NUMSIT) = SITE_NAME
+        Axis(NUMSIT) = ANT_AXIS
+        SITAXO(NUMSIT) = AXIS_OFF
+        SITXYZ(1,NUMSIT) = X
+        SITXYZ(2,NUMSIT) = Y
+        SITXYZ(3,NUMSIT) = Z
         LOAD_ANT = 0
       ENDIF
 

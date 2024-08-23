@@ -50,13 +50,10 @@
 !                  DG, 2016-July-07  Kjob added to conserve LU numbers
 !
 !
-!!      write(*,*) "DEBUG: dscan [Iscan, Kjob]", Iscan, Kjob
-!
 !      Initialize scan inputs.
         ScanID       = '          '
         ScanNum      = -1
         ScanStrt     = -1 
-        ScanDur      = -1
         PointingSrc  = -1
         NumPhCntr    = -1
         PhCntrNum    = -1
@@ -68,7 +65,6 @@
         ScanNum = 1
         ScanID = "No001"
         ScanStrt = 0
-        ScanDur = 240
         PointingSrc = 1
         NumPhCntr = 1
         PhCntrNum = 1
@@ -125,11 +121,9 @@
         StrtUTCmin = (Xintv(1) - JD1) * 1440.D0
         StopUTCmin = (Xintv(2) - JD1) * 1440.D0
         ProcMin = StopUTCmin - StrtUTCmin + .00001
-        write (*,*) "DEBUG: ProcMin= ", ProcMin
 !         # of 2-minute intervals this scan
         Intrvls2min = ProcMin/2 + 1   ! Add an extra 2-minutes
 !         # of calc epochs this scan
-        write (*,*) "DEBUG: Intrvls2min= ", Intrvls2min
         NumEpochs = ((ProcMin*60. + .001)/d_interval) + 1
 !
 !      write(6,*) 'dScan: Numsrc,Numstr,NumSpace: ', Numsrc,Numstr,NumSpace

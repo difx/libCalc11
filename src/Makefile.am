@@ -63,6 +63,7 @@ libcalc11_la_SOURCES = \
 	load_ant.f \
 	load_eop.f \
 	set_times.f \
+	runcalc.f \
 	calcinit.f
 
 # Install headers

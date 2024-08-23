@@ -20,6 +20,7 @@
       StartHr  = hour
       StartMin = min
       StartSec = int(sec)
+      ScanDur = (MJDStop-MJDStart)*(24*60*60)
       
       RETURN
 

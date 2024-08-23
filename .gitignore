@@ -17,10 +17,13 @@ tests/.libs
 src/.libs
 src/.deps
 src/libcalc11.la
+src/param11.i
 depcomp
 aclocal.m4
 compile
 configure
+COPYING
+INSTALL
 tests/testCalc11
 test-driver
 # Install directories
@@ -28,3 +31,5 @@ lib
 bin
 include
 share
+m4
+

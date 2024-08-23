@@ -39,6 +39,7 @@
       INCLUDE 'cuser11.i'
 !
       INCLUDE 'c2poly.i'
+      INCLUDE 'cmwob11.i'
 !
 !
       Real*8  ATMUTC(3), ROTEPH(2,20), A1UTC(3), A1DIFF(3)
@@ -175,8 +176,10 @@
           SITXYZ(KJ,IK) = 0.D0
         Enddo
       Enddo
-       
-!
+
+! Number of EOPs loaded
+      WOBIF(3) = 0 
+
 !   Get the apriori's from the .calc file.
       call dGet_input()
 
@@ -189,7 +192,7 @@
       SITXYZ(1,1) = 0.D0
       SITXYZ(2,1) = 0.D0
       SITXYZ(3,1) = 0.D0
-      NUMSIT = NUMSIT + 1
+      NUMSIT = 1
 
 !     Normal conclusion.
       RETURN
@@ -305,7 +308,7 @@
 !       Variables from:
 !         1. Calc_user  - Calc user type. 'A' for Calc/SOLVE analysis.
 !                         'C' for VLBI correlator.
-      INCLUDE 'cmxut11.i'
+!      INCLUDE 'cmxut11.i'
 !            Variables 'to':
 !              1. Xintv(2)  - First and last Julian Date in the data base
 !              1. UT1IF(4)  - The final UT1 information array. This array
@@ -419,7 +422,7 @@
 !                                  coefficients, interpolated from the Desai
 !                                  lat/lon table.
 !
-      INCLUDE 'cmxsr11.i'
+!      INCLUDE 'cmxsr11.i'
 !       VARIABLES 'TO':
 !         1. LNSTAR(10,MAX_ARC_SRC)- THE ALPHANUMERIC CHARACTER NAMES
 !                                    OF THE STARS IN THE STAR CATALOG.
@@ -441,30 +444,22 @@
 !
 !
 
-      INCLUDE 'd_input.i'
-      Character*20 SrcName(MAX_ARC_SRC)
-      Equivalence (LNSTAR(1,1), SrcName(1))
+!      INCLUDE 'd_input.i'
+!      Character*20 SrcName(MAX_ARC_SRC)
+!      Equivalence (LNSTAR(1,1), SrcName(1))
 
-      call set_times(60255.68715277778d0, 60255.6875d0)
+!      call set_times(60255.68715277778d0, 60255.6875d0)
 
-! Load Antennas
-!     Don't fill site #1. That will be the Geocenter.  TODO Generalise reference location
-      NUMSIT = 0
-      call load_ant('AK01', 'AZEL', 0.00000d0, -2556088.476234d0,   5097405.971301d0,   -2848428.398018d0)
-      call load_ant('AK02', 'AZEL', 0.00000d0, -2556109.97953037d0, 5097388.70113492d0, -2848440.13354315d0)
-      call load_ant('AK03', 'AZEL', 0.00000d0, -2556121.90976612d0, 5097392.35165232d0, -2848421.53643228d0)
-      
-      call load_source(1, '1934-638', 5.1d0, -1.0d0)
-      
+!      call load_source(1, '1934-638', 5.1d0, -1.0d0)
 
 !     Number of  EOPs
-      WOBIF(3) = 0 
-      call load_eop(60252, 37, 0.2672, 0.2618,  0.01248)
-      call load_eop(60253, 37, 0.2654, 0.2600,  0.01287)
-      call load_eop(60254, 37, 0.2636, 0.2583,  0.01312)
-      call load_eop(60255, 37, 0.2618, 0.2567,  0.01318)
-      call load_eop(60256, 37, 0.2599, 0.2550,  0.01304)
-      call load_eop(60257, 37, 0.2581, 0.2534,  0.01272)
+!      WOBIF(3) = 0 
+!      call load_eop(60252, 37, 0.2672, 0.2618,  0.01248)
+!      call load_eop(60253, 37, 0.2654, 0.2600,  0.01287)
+!      call load_eop(60254, 37, 0.2636, 0.2583,  0.01312)
+!      call load_eop(60255, 37, 0.2618, 0.2567,  0.01318)
+!      call load_eop(60256, 37, 0.2599, 0.2550,  0.01304)
+!      call load_eop(60257, 37, 0.2581, 0.2534,  0.01272)
       
       Return
       End

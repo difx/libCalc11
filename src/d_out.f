@@ -110,11 +110,11 @@
 !
         If (J2m .eq. 1) Then
            write(*,*) "SCAN ", Iscan, " POINTSRC:", SrcName(PointingSrc)
-           write(*,*)  "SCAN %d NUM PHS CTRS:", Iscan-1, NumPhCntr
+           write(*,*)  "SCAN ", Iscan-1, " NUM PHS CTRS:", NumPhCntr
            Do Iph = 1,NumPhCntr
               write(*,*) "SN PTR:", Iscan-1, Iph-1, SrcName(PhCntr(Iph)) 
            Enddo
-           write (*,*) "SCAN %d NUM POLY:", Iscan-1, Numpoly
+           write (*,*) "SCAN ", Iscan-1, " NUM POLY:", Numpoly
        Endif
 !
 !
