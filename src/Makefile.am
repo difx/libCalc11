@@ -64,9 +64,10 @@ libcalc11_la_SOURCES = \
 	load_eop.f \
 	set_times.f \
 	runcalc.f \
-	calcinit.f
+	calcinit.f \
+	calcC.f90
 
 # Install headers
 include_HEADERS = parsevis.h \
-		poly.h
-
+		poly.h \
+		calc11.h

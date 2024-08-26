@@ -1,5 +1,7 @@
 AM_FFLAGS = -g -I$(top_srcdir)/src  -ffree-form
 
+AM_CPPFLAGS = -I$(top_srcdir)/src
+
 FCFLAGS = -g -I$(top_srcdir)/src
 
 LDADD = \
@@ -7,11 +9,11 @@ LDADD = \
 
 bin_PROGRAMS = \
         testCalc11 \
-	test
+	testCalc11_c
 
 testCalc11_SOURCES = \
         testCalc11.f90
 
-test_SOURCES = \
-	test.f90 subA.f subB.f
+testCalc11_c_SOURCES = \
+        testCalc11_c.c
 
