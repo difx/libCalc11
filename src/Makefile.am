@@ -5,6 +5,7 @@ FCFLAGS = -g
 lib_LTLIBRARIES = libcalc11.la
 
 libcalc11_la_SOURCES = \
+	difxiohelper.c \
 	config.h \
 	difxcalc.h \
 	difxio.h \
@@ -23,7 +24,6 @@ libcalc11_la_SOURCES = \
 	input11.i \
 	param11.i \
 	put2s.i \
-	difxiohelper.c \
 	catiu.f \
 	catmm.f \
 	caxom.f \
@@ -65,7 +65,10 @@ libcalc11_la_SOURCES = \
 	set_times.f \
 	runcalc.f \
 	calcinit.f \
-	calcC.f90
+	makePoly.f90 \
+	runcalc2.f90 \
+	calcC.f90 \
+	cpoly.c
 
 # Install headers
 include_HEADERS = parsevis.h \

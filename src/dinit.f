@@ -1687,9 +1687,9 @@
         If (Jsite(i) .eq. 0) Then
            If (I .ne. Zero_site) Then
             If (iquit.eq.0) Write(6,'(/)')
-            Write(6,'("Warning - No ocean loading coefficients for ",   &
-     &         A8,/, "Will continue but you really should update file ", &
-     &         A128,/)')  Dbsites(I), OC_file
+!            Write(6,'("Warning - No ocean loading coefficients for ",   &
+!     &         A8,/, "Will continue but you really should update file ", &
+!     &         A128,/)')  Dbsites(I), OC_file
             Iquit = Iquit + 1
              Do k = 1, 11
               SITOAM(k,I)   = 0.D0
@@ -1993,9 +1993,9 @@
       do I = 1, Numsit
         if (Jsite(I) .eq. 0 .and. I .ne. Zero_site) Then
           If (iquit.eq.0) Write(6,'(/)')
-          Write(6,'("Warning - No ocean pole tide loading coefficients for ",  &
-     &         A8,/, "Will continue but you really should update file ", &
-     &         A50,/)')  Dbsites(I), OPTL_file
+!          Write(6,'("Warning - No ocean pole tide loading coefficients for ",  &
+!     &         A8,/, "Will continue but you really should update file ", &
+!     &         A50,/)')  Dbsites(I), OPTL_file
           Iquit = Iquit + 1
         endif
 !        If (Iquit .gt. 0) Then
