@@ -1,10 +1,9 @@
-integer(c_int) function runcalc2_c(mjdstart, mjdstop, npoly, delay, maxpoly) bind(C, name="runcalc2_c")
+integer(c_int) function runcalc2_c(mjdstart, mjdstop, delay, maxStation) bind(C, name="runcalc2_c")
   use, intrinsic :: iso_c_binding, only: c_int, c_double
   implicit none
   real(c_double), intent(in), value :: mjdstart, mjdstop
-  integer(c_int), intent(out) :: npoly
-  real(c_double), intent(inout) :: delay(6,maxpoly)
-  integer(c_int), intent(in), value :: maxpoly
+  real(c_double), intent(inout) :: delay(6,maxStation)
+  integer(c_int), intent(in), value :: maxStation
   include 'd_input.i'
   integer :: J
 
@@ -16,7 +15,7 @@ integer(c_int) function runcalc2_c(mjdstart, mjdstop, npoly, delay, maxpoly) bin
   call dSCAN(1, 1)
 
   ! If too many polynomials will be generated
-  if (Intrvls2min>maxpoly) then
+  if (Intrvls2min>1) then
      runcalc2_c = -2
      return
   end if
@@ -26,10 +25,9 @@ integer(c_int) function runcalc2_c(mjdstart, mjdstop, npoly, delay, maxpoly) bin
      call dDRIVR(1,J)
 
      !  Fit polynomial to coefficents and store values
-     call makePoly(J, maxpoly, delay)
+     call makePoly(maxStation, delay)
 
   enddo
-  npoly = Intrvls2min
   
 end function runcalc2_c
 

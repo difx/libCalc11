@@ -122,7 +122,8 @@
         StopUTCmin = (Xintv(2) - JD1) * 1440.D0
         ProcMin = StopUTCmin - StrtUTCmin + .00001
 !         # of 2-minute intervals this scan
-        Intrvls2min = ProcMin/2 + 1   ! Add an extra 2-minutes
+!        Intrvls2min = ProcMin/2 + 1   ! Add an extra 2-minutes
+        Intrvls2min = ProcMin/2
 !         # of calc epochs this scan
         NumEpochs = ((ProcMin*60. + .001)/d_interval) + 1
 !

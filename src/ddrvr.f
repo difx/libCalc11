@@ -471,7 +471,7 @@
       ID  = JTAG(3)
       XJD = JDY2K(IYY,IM,ID)
 !     write(6,*) '   '
-!     write(6,'("ddrvr: JTAG,TAGSEC,XJD = ",5I5,F5.1,F12.2)')         &
+!      write(6,'("ddrvr: JTAG,TAGSEC,XJD = ",5I5,F5.1,F12.2)')         &
 !    &      JTAG,TAGSEC,XJD
 !     write(6,*) '   '
 !  Fill output time array
@@ -487,7 +487,7 @@
      &      + DFLOAT ( JTAG(5) ) * 60.D0                                &
      &      + TAGSEC ) / 86400.D0
 !
-!     write(6,'("ddrvr: UTC ",F15.10)')  UTC
+!      write(6,'("ddrvr: UTC ",F15.10)')  UTC
 !
 !     Call ATIME for the atomic time fraction of the atomic time day (AT) and
 !     for the partial derivative of the UTC time with respect to the atomic

@@ -1,8 +1,7 @@
-subroutine makePoly(iPoly, nPoly, delay)
+subroutine makePoly(maxStation, delay)
   implicit none
-  integer, intent(in) :: iPoly ! Will update the i'th element
-  integer, intent(in) :: nPoly ! Total number of poly in array
-  real*8, intent(inout) :: delay(6,nPoly)
+  integer, intent(in) :: maxStation ! Total number of stations in array
+  real*8, intent(inout) :: delay(6,maxStation)
   
   include 'cmxsr11.i'
 
@@ -47,7 +46,7 @@ subroutine makePoly(iPoly, nPoly, delay)
 
      ierr = fitPoly(Acoef, Delay6, %VAL(n), %VAL(m), %VAL(delta))
      do I = 1,N
-        delay(I,iPoly) = Acoef(I)
+        delay(I,J) = Acoef(I)
      enddo
      
      ierr = fitPoly(Acoef, Atmdry6, %VAL(n), %VAL(m), %VAL(delta))
