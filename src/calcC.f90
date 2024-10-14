@@ -1,9 +1,9 @@
-subroutine calcinit_c () BIND(C, NAME="calcinit_c")
+subroutine calcinit_c () bind(c, name="calcinit_c")
   use, intrinsic :: iso_c_binding
   call calcinit()
 end subroutine calcinit_c
 
-subroutine dinitl_c () BIND(C, NAME="dinitl_c")
+subroutine dinitl_c () bind(c, name="dinitl_c")
   use, intrinsic :: iso_c_binding
   call dinitl(1)
 end subroutine dinitl_c
@@ -22,10 +22,9 @@ integer(c_int) function load_ant_c(site_name, ant_axis, axis_off, x, y, z) bind(
   load_ant_c =  load_ant(site_name_f, ant_axis_f, axis_off, x, y, z) 
 end function load_ant_c
 
-integer(c_int) function load_source_c(nsrc, src_name, ra, dec) bind(C, name="load_source_c")
+integer(c_int) function load_source_c(src_name, ra, dec) bind(C, name="load_source_c")
   use, intrinsic :: iso_c_binding, only: c_int, c_char, c_double
   implicit none
-  integer(c_int), intent(in), value :: nsrc
   character(c_char), dimension(*), intent(in) :: src_name
   real(c_double), intent(in), value :: ra, dec
   include 'cmxsr11.i'
@@ -33,7 +32,7 @@ integer(c_int) function load_source_c(nsrc, src_name, ra, dec) bind(C, name="loa
   integer load_source
 
   call cf_str_copy(src_name_f, src_name)
-  load_source_c =  load_source(nsrc, src_name_f, ra, dec) 
+  load_source_c =  load_source(src_name_f, ra, dec) 
 end function load_source_c
 
 integer(c_int) function load_eop_c(mjd, taiutc, ut1utc, xpole, ypole) bind(C, name="load_eop_c")

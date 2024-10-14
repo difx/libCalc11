@@ -19,7 +19,7 @@ int main(void) {
 
   dinitl_c();
 
-  result = load_source_c(1, "1934-638", 5.1, -1.0);
+  result = load_source_c("1934-638", 5.1, -1.0);
   runcalc_c(60255.68715277778, 60255.6870);
 
   //call load_source(1, 'Test', 4.9d0, -1.0d0);

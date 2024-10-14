@@ -1,7 +1,10 @@
-subroutine makePoly(maxStation, delay)
+subroutine makePoly(maxStation, delay, U, V, W)
   implicit none
   integer, intent(in) :: maxStation ! Total number of stations in array
   real*8, intent(inout) :: delay(6,maxStation)
+  real*8, intent(inout) :: U(6,maxStation)
+  real*8, intent(inout) :: V(6,maxStation)
+  real*8, intent(inout) :: W(6,maxStation)
   
   include 'cmxsr11.i'
 
@@ -49,12 +52,21 @@ subroutine makePoly(maxStation, delay)
         delay(I,J) = Acoef(I)
      enddo
      
-     ierr = fitPoly(Acoef, Atmdry6, %VAL(n), %VAL(m), %VAL(delta))
-     ierr = fitPoly(Acoef, Atmwet6, %VAL(n), %VAL(m), %VAL(delta))
-     ierr = fitPoly(Acoef, Az6, %VAL(n), %VAL(m), %VAL(delta))
-     ierr = fitPoly(Acoef, El6, %VAL(n), %VAL(m), %VAL(delta))
+!     ierr = fitPoly(Acoef, Atmdry6, %VAL(n), %VAL(m), %VAL(delta))
+!     ierr = fitPoly(Acoef, Atmwet6, %VAL(n), %VAL(m), %VAL(delta))
+!     ierr = fitPoly(Acoef, Az6, %VAL(n), %VAL(m), %VAL(delta))
+!     ierr = fitPoly(Acoef, El6, %VAL(n), %VAL(m), %VAL(delta))
      ierr = fitPoly(Acoef, Ubase6, %VAL(n), %VAL(m), %VAL(delta))
+     do I = 1,N
+        U(I,J) = Acoef(I)
+     enddo
      ierr = fitPoly(Acoef, Vbase6, %VAL(n), %VAL(m), %VAL(delta))
+     do I = 1,N
+        V(I,J) = Acoef(I)
+     enddo
      ierr = fitPoly(Acoef, Wbase6, %VAL(n), %VAL(m), %VAL(delta))
+     do I = 1,N
+        W(I,J) = Acoef(I)
+     enddo
   enddo                  ! Station loop
 end subroutine makePoly

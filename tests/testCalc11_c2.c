@@ -3,6 +3,19 @@
 
 #define MAXSTATION 5
 
+
+void printDelay(double **delay) {
+  int i;
+  for (int i=0; i<3; i++) {
+    printf("[%0.9f", delay[i][0]);
+    for (int j=1; j<CALC_POLY_ORDER+1; j++) {
+      printf(", %0.9e", delay[i][j]);
+    }
+    printf("]\n");
+  }
+}
+
+
 int main(void) {
   int result;
   double **delay, **wet, **dry, **Az, **El, **U, **V, **W;
@@ -27,24 +40,26 @@ int main(void) {
      
   dinitl_c();
 
-  result = load_source_c(1, "Test", 1.4, -1.0);
-  result = runcalc2_c(60255.68715, 60255.6872, delay[0], MAXSTATION);
+  result = load_source_c("Test1", 1.4, -1.0);
+  result = runcalc2_c(60255.68611111111111111111, delay[0], U[0], V[0], W[0], MAXSTATION);
   if (result!=0) {
     printf("Error (%d) running calc!", result);
   } else {
-    for (int i=0; i<3; i++) {
-      printf("[%0.9f", delay[i][0]);
-      for (int j=1; j<CALC_POLY_ORDER+1; j++) {
-	printf(", %0.9e", delay[i][j]);
-      }
-      printf("]\n");
-    }
-
-    //call load_source(1, 'Test', 4.9d0, -1.0d0);
-    //call runcalc(60255.78715277778, 60255.7875);
-
-    free_coeffs(MAXSTATION, delay, wet, dry, Az, El, U, V, W);
+    printDelay(delay);
   }
+
+  printf("\n\n");
+  
+  result =  load_source_c("Test2", 0.4, -1.0);
+  result = runcalc2_c(60255.5, delay[0], U[0], V[0], W[0], MAXSTATION);
+  if (result!=0) {
+    printf("Error (%d) running calc!", result);
+  } else {
+    printDelay(delay);
+  }
+
+  
+  free_coeffs(MAXSTATION, delay, wet, dry, Az, El, U, V, W);
   
   return(0);
   

@@ -97,33 +97,35 @@
        Intrvl(2,1) = JTAG1(2)
        Intrvl(3,1) = JTAG1(3)
        Intrvl(4,1) = JTAG1(4)
-        Min2 = JTAG1(5)/2
-        JTAG1(5) = Min2*2  
        Intrvl(5,1) = JTAG1(5)
-!  Julian date of 2-minute interval start time
+       Intrvl(6,1) = Jsecstart
+!        Min2 = JTAG1(5)/2
+!        JTAG1(5) = Min2*2  
+ !  Julian date of 2-minute interval start time
        JD1  = JDY2K (JTAG1(1),JTAG1(2),JTAG1(3)) 
-       Xintv(1) = JD1 + JTAG1(4)/24.D0 + JTAG1(5)/1440.D0
+       Xintv(1) = JD1 + JTAG1(4)/24.D0 + JTAG1(5)/1440.D0 + Jsecstart/86400.D0
 !
-        Jsec2 = Jsecstop + 119
-        Call FixEpoch(JTAG2,Jsec2)
+!        Jsec2 = Jsecstop + 119
+!        Call FixEpoch(JTAG2,Jsec2)
        Intrvl(1,2) = JTAG2(1)
        Intrvl(2,2) = JTAG2(2)
        Intrvl(3,2) = JTAG2(3)
        Intrvl(4,2) = JTAG2(4)
-        Min2 = JTAG2(5)/2
-        JTAG2(5) = Min2*2  
        Intrvl(5,2) = JTAG2(5)
+       Intrvl(5,2) = Jsecstop
+!        Min2 = JTAG2(5)/2
+!        JTAG2(5) = Min2*2  
 !  Julian date of 2-minute interval stop time
        JD2  = JDY2K (JTAG2(1),JTAG2(2),JTAG2(3)) 
-       Xintv(2) = JD2 + JTAG2(4)/24.D0 + JTAG2(5)/1440.D0
+       Xintv(2) = JD2 + JTAG2(4)/24.D0 + JTAG2(5)/1440.D0 + Jsecstop/86400.D0
 !  
 ! Start/Stop time in UTC minutes (1 day = 1440 minutes)
         StrtUTCmin = (Xintv(1) - JD1) * 1440.D0
         StopUTCmin = (Xintv(2) - JD1) * 1440.D0
-        ProcMin = StopUTCmin - StrtUTCmin + .00001
+        ProcMin = StopUTCmin - StrtUTCmin
 !         # of 2-minute intervals this scan
 !        Intrvls2min = ProcMin/2 + 1   ! Add an extra 2-minutes
-        Intrvls2min = ProcMin/2
+        Intrvls2min = ceiling(ProcMin/2-0.00001)  ! Avoid "over rounded" float
 !         # of calc epochs this scan
         NumEpochs = ((ProcMin*60. + .001)/d_interval) + 1
 !

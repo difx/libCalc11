@@ -2,7 +2,7 @@
       Integer*4 Nspline
       Logical*4 Usecubic, Uselinear, Usespline, Leap_fix,               &
      &          apply_tidal_correction, table_found
-      Integer*2 ISHRTFL, IEPOCH, ASKKER, Intrvl(5,2), ndays
+      Integer*2 ISHRTFL, IEPOCH, ASKKER, Intrvl(6,2), ndays
       Character*8 EOP_time_scale, UT1type
       Real*8      UT1IF(4), UT1PT(20), CENTJ, DJ1900, Y1(2),            &
      &            Y2(2), T, S,            DJ2000, Xintv(2),             &

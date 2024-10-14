@@ -449,8 +449,8 @@
        JTAG(3) = Intrvl(3,1)    ! day 
        JTAG(4) = Intrvl(4,1)    ! hour
        JTAG(5) = Intrvl(5,1) + (J2m-1)*2   ! minute
-       TAG_SEC = 0.D0
-         IF (JTAG(5) .ge. 60) Call FixEpoch2(JTAG, TAG_SEC)
+       TAG_SEC = Intrvl(6,1)
+       IF (JTAG(5) .ge. 60) Call FixEpoch2(JTAG, TAG_SEC)
 !
 ! Start the loop over time. We do all observations at each epoch before 
 !  moving to the next epoch because it is the most efficient in terms of
@@ -459,8 +459,8 @@
       DO Itime = 1, Epoch2m                     ! Start of epoch loop
 !
 !  Define UTC for this epoch
-        If (Itime .gt. 1) TAG_SEC = TAG_SEC +  d_interval     ! seconds
-       IF (TAG_SEC .ge. 59.999999999D0) Call FixEpoch2(JTAG, TAG_SEC)
+        If (Itime .gt. 1) TAG_SEC = TAG_SEC +  d_interval ! seconds
+        IF (TAG_SEC .ge. 59.999999999D0) Call FixEpoch2(JTAG, TAG_SEC)
         TAGSEC = TAG_SEC
 !
 !  Compute the Julian date at 0 hours UTC for the year, month, day.

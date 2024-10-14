@@ -1,17 +1,18 @@
-integer(c_int) function runcalc2_c(mjdstart, mjdstop, delay, maxStation) bind(C, name="runcalc2_c")
+integer(c_int) function runcalc2_c(mjdstart, delay, U, V, W, maxStation) bind(C, name="runcalc2_c")
   use, intrinsic :: iso_c_binding, only: c_int, c_double
   implicit none
-  real(c_double), intent(in), value :: mjdstart, mjdstop
+  real(c_double), intent(in), value :: mjdstart
   real(c_double), intent(inout) :: delay(6,maxStation)
+  real(c_double), intent(inout) :: U(6,maxStation)
+  real(c_double), intent(inout) :: V(6,maxStation)
+  real(c_double), intent(inout) :: W(6,maxStation)
   integer(c_int), intent(in), value :: maxStation
   include 'd_input.i'
   integer :: J
 
   runcalc2_c = 0
-  call set_times(mjdstart, mjdstop)
+  call set_times(mjdstart, mjdstart+1.0d0/(60*24))
       
-!  call d_out1(1)
-
   call dSCAN(1, 1)
 
   ! If too many polynomials will be generated
@@ -25,7 +26,7 @@ integer(c_int) function runcalc2_c(mjdstart, mjdstop, delay, maxStation) bind(C,
      call dDRIVR(1,J)
 
      !  Fit polynomial to coefficents and store values
-     call makePoly(maxStation, delay)
+     call makePoly(maxStation, delay, U, V, W)
 
   enddo
   
