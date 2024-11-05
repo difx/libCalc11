@@ -8,20 +8,7 @@ LDADD = \
         $(top_builddir)/src/libcalc11.la
 
 bin_PROGRAMS = \
-        testCalc11 \
-	testCalc11_c \
-	testCalc11_c2 \
-	simple
+        testCalc11 
 
 testCalc11_SOURCES = \
-        testCalc11.f90
-
-testCalc11_c_SOURCES = \
-        testCalc11_c.c
-
-testCalc11_c2_SOURCES = \
-        testCalc11_c2.c
-
-simple_SOURCES = \
-	simple.c simple_f.f90
-
+        testCalc11.c

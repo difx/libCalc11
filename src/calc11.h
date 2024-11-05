@@ -1,13 +1,12 @@
 #define CALC_POLY_ORDER 5
 
-void calcinit_c();
-void dinitl_c();
+void calcinit();
+void dinitl();
 
-int load_ant_c(const char *site_name, const char *ant_axis, double axis_off, double x, double y, double z);
-int load_source_c(const char *src_name, double RA, double Dec);
-int load_eop_c(int mjd, int taiutc, float ut1utc, float xpole, float ypole);
-void runcalc_c(double mjdstart, double mjdstop);
-int runcalc2_c(double mjdstart, double *delay, double *U, double *V, double *W, int maxStation);
+int load_ant(const char *site_name, const char *ant_axis, double axis_off, double x, double y, double z);
+int load_source(const char *src_name, double RA, double Dec);
+int load_eop(int mjd, int taiutc, float ut1utc, float xpole, float ypole);
+int runcalc(double mjdstart, double *delay, double *U, double *V, double *W, int maxStation);
 
 // Allocate memory for array polynomials
 

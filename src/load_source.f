@@ -1,4 +1,4 @@
-      integer*4 function LOAD_SOURCE(SRC_NAME, SRC_RA, SRC_DEC)
+      integer*4 function LOAD_SOURCE_F(SRC_NAME, SRC_RA, SRC_DEC)
       implicit none
 
       INCLUDE 'cmxsr11.i'
@@ -13,12 +13,12 @@
       NSRC=1
       
 !     IF ( NSRC .GT. MAX_ARC_SRC ) THEN
-!       LOAD_SOURCE = -1
+!       LOAD_SOURCE_F = -1
 !     ELSE
       SrcName(NSRC) = SRC_NAME
       RADEC(1,NSRC) = SRC_RA
       RADEC(2,NSRC) = SRC_DEC
-      LOAD_SOURCE = 0
+      LOAD_SOURCE_F = 0
 
       RETURN
       END

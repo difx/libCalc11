@@ -1,4 +1,4 @@
-      integer*4 function LOAD_EOP(MJD, TAIUTC, UT1UTC, XPOLE, YPOLE)
+      integer*4 function LOAD_EOP_F(MJD, TAIUTC, UT1UTC, XPOLE, YPOLE)
       implicit none
 
       INCLUDE 'd_input.i'
@@ -11,7 +11,7 @@
       NumEop = WOBIF(3)+1
 
       IF (NumEop.GT.20) THEN
-         LOAD_EOP = -1
+         LOAD_EOP_F = -1
       ELSE
         UT1PT(NumEop) = TAIUTC - UT1UTC
         XYWOB(1,NumEop)  = XPOLE * 1.D3
@@ -28,7 +28,7 @@
         endif
         WOBIF(3) = NumEop
         UT1IF(3) = NumEop
-        LOAD_EOP = 0
+        LOAD_EOP_F = 0
       ENDIF
 
       RETURN

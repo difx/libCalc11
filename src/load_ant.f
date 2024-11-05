@@ -1,4 +1,4 @@
-      integer*4 function LOAD_ANT(SITE_NAME, ANT_AXIS, AXIS_OFF, X, Y, Z)
+      integer*4 function LOAD_ANT_F(SITE_NAME, ANT_AXIS, AXIS_OFF, X, Y, Z)
       implicit none
 
       INCLUDE 'd_input.i'
@@ -11,7 +11,7 @@
       NUMSIT = NUMSIT + 1
 
       IF (NUMSIT.GT.Max_stat) THEN
-         LOAD_ANT = -1
+         LOAD_ANT_F = -1
       ELSE
         Sites(NUMSIT) = SITE_NAME
         Axis(NUMSIT) = ANT_AXIS
@@ -19,7 +19,7 @@
         SITXYZ(1,NUMSIT) = X
         SITXYZ(2,NUMSIT) = Y
         SITXYZ(3,NUMSIT) = Z
-        LOAD_ANT = 0
+        LOAD_ANT_F = 0
       ENDIF
 
       RETURN

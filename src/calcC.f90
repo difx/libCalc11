@@ -1,57 +1,49 @@
-subroutine calcinit_c () bind(c, name="calcinit_c")
+subroutine calcinit () bind(c, name="calcinit")
   use, intrinsic :: iso_c_binding
-  call calcinit()
-end subroutine calcinit_c
+  call calcinit_f()
+end subroutine calcinit
 
-subroutine dinitl_c () bind(c, name="dinitl_c")
+subroutine dinitl() bind(c, name="dinitl")
   use, intrinsic :: iso_c_binding
-  call dinitl(1)
-end subroutine dinitl_c
+  call dinitl_f(1)
+end subroutine dinitl
 
-integer(c_int) function load_ant_c(site_name, ant_axis, axis_off, x, y, z) bind(C, name="load_ant_c")
+integer(c_int) function load_ant(site_name, ant_axis, axis_off, x, y, z) bind(C, name="load_ant")
   use, intrinsic :: iso_c_binding
   implicit none
   character(c_char), dimension(*), intent(in) :: site_name, ant_axis
   real(c_double), intent(in), value :: axis_off, x, y, z
   character(len=8) :: site_name_f
   character(len=4) :: ant_axis_f
-  integer load_ant
+  integer load_ant_f
 
   call cf_str_copy(site_name_f, site_name)
   call cf_str_copy(ant_axis_f, ant_axis)
-  load_ant_c =  load_ant(site_name_f, ant_axis_f, axis_off, x, y, z) 
-end function load_ant_c
+  load_ant = load_ant_f(site_name_f, ant_axis_f, axis_off, x, y, z) 
+end function load_ant
 
-integer(c_int) function load_source_c(src_name, ra, dec) bind(C, name="load_source_c")
+integer(c_int) function load_source(src_name, ra, dec) bind(C, name="load_source")
   use, intrinsic :: iso_c_binding, only: c_int, c_char, c_double
   implicit none
   character(c_char), dimension(*), intent(in) :: src_name
   real(c_double), intent(in), value :: ra, dec
   include 'cmxsr11.i'
   character(len=MAX_ARC_SRC) :: src_name_f
-  integer load_source
+  integer load_source_f
 
   call cf_str_copy(src_name_f, src_name)
-  load_source_c =  load_source(src_name_f, ra, dec) 
-end function load_source_c
+  load_source = load_source_f(src_name_f, ra, dec) 
+end function load_source
 
-integer(c_int) function load_eop_c(mjd, taiutc, ut1utc, xpole, ypole) bind(C, name="load_eop_c")
+integer(c_int) function load_eop(mjd, taiutc, ut1utc, xpole, ypole) bind(C, name="load_eop")
   use, intrinsic :: iso_c_binding, only: c_int, c_float
   implicit none
   integer(c_int), intent(in), value :: mjd, taiutc
   real(c_float), intent(in), value :: ut1utc, xpole, ypole
-  integer load_eop
+  integer load_eop_f
 
-  load_eop_c = load_eop(mjd, taiutc, ut1utc, xpole, ypole) 
-end function load_eop_c
-
-subroutine runcalc_c(mjdstart, mjdstop) bind(C, name="runcalc_c")
-  use, intrinsic :: iso_c_binding, only: c_double
-  implicit none
-  real(c_double), intent(in), value :: mjdstart, mjdstop
-  call runcalc(mjdstart, mjdstop) 
-end subroutine runcalc_c
-
+  load_eop = load_eop_f(mjd, taiutc, ut1utc, xpole, ypole) 
+end function load_eop
 
 ! subroutine to copy C strings to fortran strings
 subroutine cf_str_copy(f_str, c_str)
