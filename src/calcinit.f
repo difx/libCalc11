@@ -1,4 +1,4 @@
-      SUBROUTINE CALCINIT ()
+      SUBROUTINE CALCINIT_F ()
       IMPLICIT None
 !
 

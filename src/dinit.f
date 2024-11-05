@@ -1,4 +1,4 @@
-      SUBROUTINE dINITL(Kjob)
+      SUBROUTINE dINITL_F(Kjob)
       IMPLICIT None
 
 ! 1.    INITL
