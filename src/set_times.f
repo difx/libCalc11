@@ -5,9 +5,8 @@
       INCLUDE 'cmxut11.i'
 
       REAL*8 MJDStart, MJDStop, MJDFrac
-      integer*2 hour, min
+      integer*2 hour, min, sec
       integer*4 MJDWhole
-      real*4 sec
 
       Xintv(1) = MJDStart + 2400000.5D0
       Xintv(2) = MJDStop  + 2400000.5D0
@@ -19,9 +18,8 @@
       call timhms(MJDFrac, hour, min, sec)
       StartHr  = hour
       StartMin = min
-      StartSec = int(sec)
+      StartSec = sec
       ScanDur = (MJDStop-MJDStart)*(24*60*60)
-      
       RETURN
 
       END
@@ -85,31 +83,20 @@
       return
       end
 
-! name        timhms
-!
-! function  To compute the time hours, minutes, seconds from the time in days
-!
-! call
       subroutine timhms(time, hour, min, sec)
       implicit none
-      real*8    time    ! Time in day fraction
-      integer*2 hour, min
-      real*4    sec
-!
-! author   D McConnell
-!
-! date     5-JUN-1989
-!
-! refe     time, portable
-!
-      double precision dsec
+      real*8    time            ! Time in day fraction
+      integer*2 hour, min, sec
 
-      dsec = time*86400.0
-      hour = int(dsec/3600.0d0)
-      dsec = dsec - hour*3600.0d0
-      min  = int(dsec/60.0d0)
-      sec = dsec - min*60.0d0
-      return
-      end
+      integer :: total_sec, rem_sec
 
+!     Convert to total whole seconds (nearest integer)
+      total_sec = nint(time * 86400.0d0)
 
+!     Break down into h/m/s using pure integer math
+      hour     = total_sec / 3600
+      rem_sec  = total_sec - hour * 3600
+      min      = rem_sec / 60
+      sec      = rem_sec - min * 60
+      return 
+      end subroutine timhms
