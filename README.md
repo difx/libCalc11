@@ -27,7 +27,7 @@ directory, you could use the commands:
 ```
 mkdir build
 cd build
-cmake -DCMAKE_Fortran_COMPILER=gfortran -DCMAKE_INSTALL_PREFIX:PATH=${HOME} ..
+cmake -DCMAKE_Fortran_COMPILER=gfortran -DCMAKE_INSTALL_PREFIX=${HOME} ..
 make
 make install
 ```
@@ -36,7 +36,7 @@ make install
 
 ## 
 
-Run the test progam test/testCalc11. Currently uses hard coded values
+Run the test program test/testCalc11. Currently uses hard-coded values
 
 
 
