@@ -26,6 +26,9 @@ FILE(GLOB calc11lib_files ${calc11_dir}/*.f ${calc11_dir}/*.c ${calc11_dir}/*.f9
 add_library(calc11_lib STATIC ${calc11lib_files})
 target_include_directories(calc11_lib PUBLIC ${CMAKE_CURRENT_BINARY_DIR} ${calc11_dir})
 target_link_libraries(calc11_lib PUBLIC ${GSL_LIBRARY})
+set_target_properties(calc11_lib PROPERTIES OUTPUT_NAME calc11)
+install(TARGETS calc11_lib ARCHIVE DESTINATION lib)
+install(FILES ${calc11_dir}/calc11.h DESTINATION include)
 
 # The test executables.
 if (CMAKE_PROJECT_NAME STREQUAL PROJECT_NAME)
